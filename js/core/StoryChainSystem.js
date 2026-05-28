@@ -246,7 +246,7 @@ class StoryChainSystem {
             stage: 2,
             name: '四面楚歌',
             events: ['allies_abandoned', 'leader_dissatisfied', 'colleagues_turn'],
-            condition: (state) => state.needs.reputation <= 30,
+            condition: (state) => state.needs.reputationValue <= 30,
             result: 'dire_situation'
           },
           {

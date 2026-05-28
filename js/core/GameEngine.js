@@ -14,38 +14,48 @@ class GameEngine {
   init() {
     console.log('🎮 初始化游戏引擎...');
     
-    // 尝试加载存档
-    if (typeof SaveManager !== 'undefined') {
-      this.state = SaveManager.loadGame();
+    try {
+      // 尝试加载存档
+      if (typeof SaveManager !== 'undefined' && SaveManager) {
+        try {
+          this.state = SaveManager.loadGame();
+        } catch (e) {
+          console.warn('存档加载失败，创建新游戏:', e);
+          this.state = null;
+        }
+      }
+      
+      // 如果没有存档，创建新游戏
+      if (!this.state) {
+        this.createNewGame();
+      }
+      
+      // 初始化系统
+      if (typeof SkillSystem !== 'undefined') {
+        try { SkillSystem.init(this.state); } catch (e) { console.warn('SkillSystem初始化失败:', e); }
+      }
+      
+      if (typeof InnerVoiceSystem !== 'undefined') {
+        try { InnerVoiceSystem.init(this.state); } catch (e) { console.warn('InnerVoiceSystem初始化失败:', e); }
+      }
+      
+      if (typeof EventSystem !== 'undefined') {
+        try { EventSystem.init(this.state); } catch (e) { console.warn('EventSystem初始化失败:', e); }
+      }
+      
+      // 更新 UI
+      if (typeof UIManager !== 'undefined') {
+        try { UIManager.updateAll(); } catch (e) { console.warn('UIManager更新失败:', e); }
+      }
+      
+      // 生成任务列表
+      this.generateTaskList();
+      
+      console.log('✅ 游戏初始化完成');
+    } catch (e) {
+      console.error('游戏初始化失败:', e);
+      alert('游戏初始化失败，请刷新页面重试。');
     }
-    
-    // 如果没有存档，创建新游戏
-    if (!this.state) {
-      this.createNewGame();
-    }
-    
-    // 初始化系统
-    if (typeof SkillSystem !== 'undefined') {
-      SkillSystem.init(this.state);
-    }
-    
-    if (typeof InnerVoiceSystem !== 'undefined') {
-      InnerVoiceSystem.init(this.state);
-    }
-    
-    if (typeof EventSystem !== 'undefined') {
-      EventSystem.init(this.state);
-    }
-    
-    // 更新 UI
-    if (typeof UIManager !== 'undefined') {
-      UIManager.updateAll();
-    }
-    
-    // 生成任务列表
-    this.generateTaskList();
-    
-    console.log('✅ 游戏初始化完成');
   }
 
   // 创建新游戏
@@ -70,7 +80,7 @@ class GameEngine {
         health: 100,
         mood: 100,
         belonging: 50,
-        reputation: 50
+        reputationValue: 50 // 使用不同的名字避免冲突
       },
       
       // 隐藏属性
@@ -375,7 +385,7 @@ class GameEngine {
     this.state.needs.mood = Math.min(100, this.state.needs.mood + 12);
     
     // 需求值衰减
-    this.state.needs.reputation = Math.max(0, this.state.needs.reputation - 2);
+    this.state.needs.reputationValue = Math.max(0, this.state.needs.reputationValue - 2);
     this.state.needs.belonging = Math.max(0, this.state.needs.belonging - 3);
     
     // 保存游戏
@@ -431,7 +441,7 @@ class GameEngine {
     this.state.stats.consecutiveFish++;
     this.state.needs.energy = Math.min(100, this.state.needs.energy + 30);
     this.state.needs.mood = Math.min(100, this.state.needs.mood + 20);
-    this.state.needs.reputation = Math.max(0, this.state.needs.reputation - 5);
+    this.state.needs.reputationValue = Math.max(0, this.state.needs.reputationValue - 5);
     
     this.endDay();
     
