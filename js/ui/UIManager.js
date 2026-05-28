@@ -15,16 +15,21 @@ class UIManager {
   }
 
   // 更新所有 UI
-  updateAll() {
-    if (!this.gameEngine || !this.gameEngine.state) return;
+  updateAll(state) {
+    console.log('🎨 UIManager.updateAll 被调用');
+    const gameState = state || (this.gameEngine && this.gameEngine.state);
     
-    const state = this.gameEngine.state;
+    if (!gameState) {
+      console.warn('❌ 没有游戏状态可更新');
+      return;
+    }
     
-    this.updateStatusBar(state);
-    this.updateVoiceUI();
-    this.updateStatsUI(state);
-    this.updateCharacterUI(state);
-    this.updateSkillUIAll();
+    try { this.updateStatusBar(gameState); } catch (e) { console.error('updateStatusBar失败:', e); }
+    try { this.updateVoiceUI(gameState); } catch (e) { console.error('updateVoiceUI失败:', e); }
+    try { this.updateStatsUI(gameState); } catch (e) { console.error('updateStatsUI失败:', e); }
+    try { this.updateCharacterUI(gameState); } catch (e) { console.error('updateCharacterUI失败:', e); }
+    try { this.updateSkillUIAll(); } catch (e) { console.error('updateSkillUIAll失败:', e); }
+    console.log('✅ UIManager.updateAll 完成');
   }
 
   // 更新状态栏
@@ -37,10 +42,9 @@ class UIManager {
   }
 
   // 更新声音 UI
-  updateVoiceUI() {
-    if (!this.gameEngine || !this.gameEngine.state) return;
-    
-    const voices = this.gameEngine.state.voices;
+  updateVoiceUI(state) {
+    const voices = (state && state.voices) || (this.gameEngine && this.gameEngine.state && this.gameEngine.state.voices);
+    if (!voices) return;
     
     // 更新野心家
     document.getElementById('ambitionBar').style.width = `${voices.ambition}%`;

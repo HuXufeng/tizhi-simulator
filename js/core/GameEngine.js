@@ -15,46 +15,41 @@ class GameEngine {
     console.log('🎮 初始化游戏引擎...');
     
     try {
-      // 尝试加载存档
-      if (typeof SaveManager !== 'undefined' && SaveManager) {
-        try {
-          this.state = SaveManager.loadGame();
-        } catch (e) {
-          console.warn('存档加载失败，创建新游戏:', e);
-          this.state = null;
+      // 第一步：创建干净的新游戏（不加载存档，先测试）
+      console.log('🧹 创建新游戏状态...');
+      this.createNewGame();
+      console.log('✅ 新游戏状态创建成功');
+      
+      // 第二步：初始化事件系统（最关键）
+      if (typeof EventSystem !== 'undefined' && EventSystem) {
+        console.log('📋 初始化EventSystem...');
+        try { 
+          EventSystem.init(this.state); 
+          console.log('✅ EventSystem初始化成功');
+        } catch (e) { 
+          console.error('❌ EventSystem初始化失败:', e); 
         }
       }
       
-      // 如果没有存档，创建新游戏
-      if (!this.state) {
-        this.createNewGame();
-      }
-      
-      // 初始化系统
-      if (typeof SkillSystem !== 'undefined') {
-        try { SkillSystem.init(this.state); } catch (e) { console.warn('SkillSystem初始化失败:', e); }
-      }
-      
-      if (typeof InnerVoiceSystem !== 'undefined') {
-        try { InnerVoiceSystem.init(this.state); } catch (e) { console.warn('InnerVoiceSystem初始化失败:', e); }
-      }
-      
-      if (typeof EventSystem !== 'undefined') {
-        try { EventSystem.init(this.state); } catch (e) { console.warn('EventSystem初始化失败:', e); }
-      }
-      
-      // 更新 UI
-      if (typeof UIManager !== 'undefined') {
-        try { UIManager.updateAll(); } catch (e) { console.warn('UIManager更新失败:', e); }
-      }
-      
-      // 生成任务列表
+      // 第三步：生成任务（最小化）
+      console.log('📋 生成任务列表...');
       this.generateTaskList();
       
+      // 第四步：更新UI
+      if (typeof UIManager !== 'undefined' && UIManager) {
+        console.log('🎨 更新UI...');
+        try { 
+          UIManager.updateAll(this.state); 
+          console.log('✅ UI更新成功');
+        } catch (e) { 
+          console.error('❌ UI更新失败:', e); 
+        }
+      }
+      
       console.log('✅ 游戏初始化完成');
-    } catch (e) {
-      console.error('游戏初始化失败:', e);
-      alert('游戏初始化失败，请刷新页面重试。');
+    } catch (error) {
+      console.error('❌ 游戏初始化失败:', error);
+      alert('游戏初始化失败: ' + (error.message || error));
     }
   }
 
