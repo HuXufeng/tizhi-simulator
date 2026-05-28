@@ -220,11 +220,28 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🏛️ 体制内模拟器 2.0 启动中...');
             
+            console.log('📦 检查模块加载状态:');
+            console.log('  EVENT_DATABASE:', typeof EVENT_DATABASE);
+            console.log('  CHARACTER_DATABASE:', typeof CHARACTER_DATABASE);
+            console.log('  SKILL_DATABASE:', typeof SKILL_DATABASE);
+            console.log('  SaveManager:', typeof SaveManager);
+            console.log('  GameEngine:', typeof GameEngine);
+            console.log('  SkillSystem:', typeof SkillSystem);
+            console.log('  InnerVoiceSystem:', typeof InnerVoiceSystem);
+            console.log('  EventSystem:', typeof EventSystem);
+            console.log('  UIManager:', typeof UIManager);
+            
             // 初始化游戏引擎
             if (typeof GameEngine !== 'undefined') {
-                GameEngine.init();
+                try {
+                    GameEngine.init();
+                } catch (e) {
+                    console.error('❌ GameEngine初始化失败:', e);
+                    alert('游戏初始化失败，请刷新页面重试');
+                }
             } else {
                 console.error('GameEngine 未加载');
+                alert('GameEngine 未加载');
             }
         });
 

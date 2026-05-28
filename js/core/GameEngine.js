@@ -169,11 +169,24 @@ class GameEngine {
 
   // 生成任务列表
   generateTaskList() {
-    if (typeof EventSystem !== 'undefined') {
-      const tasks = EventSystem.generateDailyTasks(this.state);
-      if (typeof UIManager !== 'undefined') {
-        UIManager.renderTaskList(tasks);
+    try {
+      console.log('📋 开始生成任务列表...');
+      console.log('  EventSystem:', typeof EventSystem);
+      console.log('  UIManager:', typeof UIManager);
+      
+      if (typeof EventSystem !== 'undefined' && EventSystem) {
+        const tasks = EventSystem.generateDailyTasks(this.state);
+        console.log('  生成的任务:', tasks);
+        
+        if (typeof UIManager !== 'undefined' && UIManager) {
+          UIManager.renderTaskList(tasks);
+          console.log('✅ 任务列表渲染完成');
+        }
+      } else {
+        console.error('❌ EventSystem或UIManager未加载');
       }
+    } catch (error) {
+      console.error('❌ 生成任务列表失败:', error);
     }
   }
 
