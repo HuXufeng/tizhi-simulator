@@ -1,0 +1,28 @@
+# 忽略 Superpowers 临时文件
+.superpowers/
+
+# 编辑器临时文件
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Node.js (如果未来使用)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# 本地缓存
+*.log
+.tmp/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
