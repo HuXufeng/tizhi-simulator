@@ -49,6 +49,15 @@ class SaveManager {
       
       const saveData = JSON.parse(saveString);
       
+      // 修复数据结构（无论版本都检查并修复）
+      if (saveData.needs) {
+        // 检查并修复旧的reputation字段
+        if (saveData.needs.reputation !== undefined && saveData.needs.reputationValue === undefined) {
+          saveData.needs.reputationValue = saveData.needs.reputation;
+          delete saveData.needs.reputation;
+        }
+      }
+      
       // 版本检查
       if (saveData.meta?.version !== this.version) {
         console.log('🔄 检测到存档版本不匹配，需要迁移...');
@@ -79,13 +88,16 @@ class SaveManager {
         reputation: oldSave.reputation || 50,
         connections: oldSave.connections || 50,
         
-        needs: oldSave.needs || {
-          energy: 100,
-          health: 100,
-          mood: 100,
-          belonging: 50,
-          reputation: 50
-        },
+        needs: (() => {
+          const oldNeeds = oldSave.needs || {};
+          return {
+            energy: oldNeeds.energy || 100,
+            health: oldNeeds.health || 100,
+            mood: oldNeeds.mood || 100,
+            belonging: oldNeeds.belonging || 50,
+            reputationValue: oldNeeds.reputationValue || oldNeeds.reputation || 50
+          };
+        })(),
         
         hiddenStats: oldSave.hiddenStats || {
           politicalCapital: 0,
