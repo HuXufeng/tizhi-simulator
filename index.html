@@ -1,0 +1,3448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体制内模拟器 - Windows 98</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body { font-family: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif; font-size: 11px; background: #008080; overflow: hidden; height: 100vh; }
+
+        /* ========== 移动端竖屏适配 ========== */
+        @media (max-width: 768px) {
+            body { overflow: auto; background: #e0e0e0; font-size: 14px; }
+            #desktop { display: none !important; }
+            #taskbar { display: none !important; }
+            #start-menu { display: none !important; }
+            .desktop-gadget { display: none !important; }
+            #desk-pet { display: none !important; }
+            #intro-screen { justify-content: flex-start; padding: 24px 16px; }
+            #intro-screen .intro-text { font-size: 13px; line-height: 1.8; margin-bottom: 20px; }
+            #intro-screen .intro-choice { font-size: 14px; padding: 14px 18px; }
+            #intro-screen .intro-title { font-size: 28px; margin-bottom: 20px; }
+            #welcome-screen .welcome-title { font-size: 28px; }
+            #welcome-screen .welcome-btn { padding: 16px 48px; font-size: 16px; }
+            #mobile-app { display: flex !important; flex-direction: column; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #f0f0f0; z-index: 1; }
+            #mobile-status-bar { display: flex !important; flex-direction: column; background: linear-gradient(135deg,#1a1a2e,#16213e); color: #fff; padding: 8px 12px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+            #mobile-status-bar .sr1 { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 6px; }
+            #mobile-status-bar .sp { font-weight: bold; color: #ffd700; }
+            #mobile-status-bar .sd { color: #a0c0e0; }
+            #mobile-status-bar .sb { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+            #mobile-status-bar .si { display: flex; align-items: center; gap: 3px; font-size: 11px; }
+            #mobile-status-bar .sbb { width: 50px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+            #mobile-status-bar .sbf { height: 100%; border-radius: 3px; transition: width 0.3s; }
+            #mobile-status-bar .sbf.en { background: #ffd700; }
+            #mobile-status-bar .sbf.hl { background: #ff4444; }
+            #mobile-status-bar .sbf.cn { background: #32cd32; }
+            #mobile-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px; padding-bottom: 70px; }
+            .mtc { background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #0066cc; }
+            .mtc .th { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+            .mtc .tt { font-weight: bold; font-size: 15px; }
+            .mtc .ttg { font-size: 11px; padding: 2px 8px; border-radius: 10px; color: #fff; }
+            .mtc .ttg.urg { background: #c00000; }
+            .mtc .ttg.imp { background: #c07800; }
+            .mtc .ttg.nor { background: #0066cc; }
+            .mtc .ttg.srv { background: #008000; }
+            .mtc .ttg.evt { background: #800080; }
+            .mtc .tm { font-size: 12px; color: #666; margin-bottom: 8px; }
+            .mtc .td { font-size: 13px; line-height: 1.6; color: #333; margin-bottom: 12px; }
+            .mtc .to { display: block; width: 100%; padding: 12px 14px; margin-bottom: 8px; background: #f0f4ff; border: 1px solid #c0c8e0; border-radius: 8px; font-size: 13px; line-height: 1.5; text-align: left; cursor: pointer; min-height: 44px; }
+            .mtc .to:active { background: #d0d8f8; }
+            .mtc .to:last-child { margin-bottom: 0; }
+            #mobile-nav { display: flex !important; position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: #c0c0c0; border-top: 2px solid #dfdfdf; z-index: 9999; justify-content: space-around; align-items: center; box-shadow: 0 -2px 8px rgba(0,0,0,0.2); }
+            .mnv { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; height: 100%; cursor: pointer; font-size: 10px; color: #333; border: none; background: none; min-height: 44px; -webkit-tap-highlight-color: transparent; }
+            .mnv.ac { color: #000080; font-weight: bold; }
+            .mnv .ni { font-size: 20px; margin-bottom: 2px; }
+            .mnv .nl { font-size: 10px; }
+            #mobile-panel { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #f0f0f0; z-index: 10000; overflow-y: auto; padding: 12px; padding-bottom: 70px; }
+            #mobile-panel.sh { display: block; }
+            #mobile-panel .ph { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 2px solid #c0c0c0; margin-bottom: 12px; font-size: 16px; font-weight: bold; }
+            #mobile-panel .pc { font-size: 24px; cursor: pointer; padding: 8px; }
+            .mcc { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+            .mcc .ca { font-size: 32px; }
+            .mcc .ci { flex: 1; }
+            .mcc .cn { font-weight: bold; font-size: 14px; }
+            .mcc .cr { font-size: 12px; color: #666; }
+            .mcc .ob { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 4px; }
+            .mcc .of { height: 100%; border-radius: 4px; }
+            .mmi { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-left: 3px solid #0066cc; }
+            .mmi.mp { border-left-color: #008000; }
+            .mmi.mn { border-left-color: #c00000; }
+            .mmi .mh { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+            .mmi .ms { font-weight: bold; font-size: 13px; }
+            .mmi .mt { margin-left: auto; font-size: 11px; color: #999; }
+            .mmi .mc { font-size: 13px; line-height: 1.5; color: #333; }
+            .mai { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+            .mai.lk { opacity: 0.5; }
+            .mai .ai { font-size: 28px; }
+            .mai .an { flex: 1; }
+            .mai .at { font-weight: bold; font-size: 13px; }
+            .mai .ad { font-size: 11px; color: #666; }
+            .msi { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); font-size: 14px; }
+            .msi .sbtn { display: block; width: 100%; padding: 14px; margin-top: 10px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; min-height: 44px; }
+            .msi .bdn { background: #ffcccc; color: #c00000; border: 1px solid #ffaaaa; }
+            .msi .bdn:active { background: #ffaaaa; }
+            .msi .bn { background: #c0c0c0; color: #333; border: 1px solid #a0a0a0; }
+            .msi .bn:active { background: #a0a0a0; }
+            #mobile-fish-btn { position: fixed; bottom: 80px; right: 16px; z-index: 10000; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #fff3cd, #ffe082); border: 2px solid #ffc107; font-size: 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; padding: 0; }
+            #mobile-fish-btn:active { background: #ffc107; transform: scale(0.92); }
+            #mobile-fish-btn .fish-label { display: none; }
+            .mto { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; border-radius: 12px; padding: 24px 32px; z-index: 20000; display: none; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); max-width: 85%; font-size: 14px; }
+            .mto.sh { display: block; animation: mfi 0.3s ease-out; }
+            @keyframes mfi { from { opacity: 0; transform: translate(-50%,-50%) scale(0.9); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+            .win98-window { display: none !important; }
+        }
+        @media (min-width: 769px) {
+            #mobile-app { display: none !important; }
+            #mobile-nav { display: none !important; }
+            #mobile-panel { display: none !important; }
+            #mobile-status-bar { display: none !important; }
+            #desk-pet { display: block !important; }
+            #mobile-fish-btn { display: none !important; }
+            #mobile-toast { display: none !important; }
+            #mobile-warning { display: none !important; }
+            #mobile-success { display: none !important; }
+        }
+        
+        /* Intro Screen */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #000040 0%, #000080 50%, #000040 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; padding: 40px; overflow-y: auto;
+        }
+        .intro-text {
+            color: #c0c0c0; font-size: 14px; line-height: 2; max-width: 700px;
+            text-align: left; margin-bottom: 30px; animation: fadeIn 1s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .intro-highlight { color: #ffd700; font-weight: bold; }
+        .intro-divider { width: 80%; height: 2px; background: linear-gradient(90deg, transparent, #c0c0c0, transparent); margin: 20px 0; }
+        .intro-title { color: white; font-size: 36px; font-weight: bold; text-shadow: 2px 2px 4px #000; margin-bottom: 30px; letter-spacing: 4px; }
+        .intro-choice { background: #c0c0c0; border: 3px outset #dfdfdf; padding: 12px 24px; margin: 8px 0; font-size: 13px; cursor: pointer; width: 100%; max-width: 500px; text-align: left; box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff; }
+        .intro-choice:hover { background: #d4d4d4; }
+        .intro-choice:active { box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff; }
+        .intro-choice:disabled { opacity: 0.5; cursor: not-allowed; }
+        .intro-btn { background: #c0c0c0; border: 3px outset #dfdfdf; padding: 14px 50px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff; margin-top: 20px; }
+        .intro-btn:hover { background: #d4d4d4; }
+        .intro-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .talent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 600px; }
+        .talent-card { background: #2a2a4a; border: 2px solid #4a4a6a; padding: 15px; text-align: left; cursor: pointer; transition: all 0.3s; }
+        .talent-card:hover { background: #3a3a5a; border-color: #ffd700; }
+        .talent-card.selected { background: #1a1a3a; border-color: #ffd700; box-shadow: 0 0 10px #ffd700; }
+        .talent-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+        .talent-name { color: #ffd700; font-weight: bold; font-size: 14px; }
+        .talent-desc { color: #a0a0c0; font-size: 11px; margin-top: 5px; }
+        .talent-rarity { font-size: 10px; padding: 2px 8px; background: #4a4a6a; color: white; }
+        .talent-rarity.legendary { background: #ffd700; color: black; }
+        .talent-rarity.rare { background: #9b59b6; }
+        
+        /* Welcome Screen */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #004080 0%, #0060a0 40%, #004080 100%);
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .welcome-emblem {
+            width: 200px; height: 140px; background: linear-gradient(135deg, #004080, #0060a0, #004080);
+            border: 4px solid #002050; position: relative; margin-bottom: 30px; box-shadow: 8px 8px 16px rgba(0,0,0,0.5);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+        }
+        .welcome-emblem::before {
+            content: '🏛️'; font-size: 80px; color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .welcome-title { color: white; font-size: 40px; font-weight: bold; text-shadow: 3px 3px 0 #000080; margin-bottom: 8px; letter-spacing: 8px; }
+        .welcome-subtitle { color: #a0c0e0; font-size: 16px; margin-bottom: 10px; letter-spacing: 2px; }
+        .welcome-tagline { color: #ffd700; font-size: 13px; margin-bottom: 40px; letter-spacing: 1px; }
+        .welcome-btn {
+            background: #c0c0c0; border: none; padding: 14px 60px; font-size: 15px; font-weight: bold; cursor: pointer;
+            box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf, inset -2px -2px 0 #404040, inset 2px 2px 0 #ffffff;
+        }
+        .welcome-btn:hover { background: #d4d4d4; }
+
+        /* Day Transition Overlay */
+        #day-transition {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 30%, #16213e 60%, #0f3460 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease;
+            overflow: hidden;
+        }
+        #day-transition::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            right: 15%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: moonGlow 3s ease-in-out infinite;
+        }
+        #day-transition.overlay-hidden { opacity: 0; pointer-events: none; }
+        #day-transition.overlay-visible { opacity: 1; pointer-events: auto; }
+
+        .transition-content {
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+            z-index: 10;
+        }
+
+        .transition-icon {
+            font-size: 100px;
+            animation: moonPulse 2s ease-in-out infinite;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+        }
+
+        .transition-text {
+            font-size: 42px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.3);
+            margin-bottom: 12px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        .transition-subtext {
+            font-size: 20px;
+            color: #c0c0c0;
+            margin-bottom: 35px;
+            opacity: 0.9;
+        }
+
+        .transition-progress {
+            width: 280px;
+            height: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0 auto;
+            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffaa00, #ff6b6b);
+            width: 0%;
+            animation: progressMove 1.2s ease-out forwards;
+            border-radius: 5px;
+        }
+
+        .transition-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: starTwinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes moonPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+        }
+
+        @keyframes progressMove {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        @keyframes moonGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.3); }
+            50% { text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 45px rgba(255,215,0,0.5); }
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Desktop */
+        #desktop { display: none; height: calc(100vh - 28px); padding: 10px; position: relative; }
+        .desktop-icon { width: 70px; text-align: center; padding: 4px; cursor: pointer; margin-bottom: 8px; }
+        .desktop-icon:hover { background: rgba(0, 0, 128, 0.3); }
+        .icon-img { font-size: 32px; display: block; margin-bottom: 2px; }
+        .icon-label { color: white; font-size: 11px; text-shadow: 1px 1px 1px #000; word-wrap: break-word; }
+        
+        /* Desktop Gadgets */
+        .desktop-gadget {
+            position: absolute; background: #ffffd0; border: 2px outset #dfdfdf;
+            padding: 8px 12px; font-size: 11px; color: #000; box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+        }
+        .gadget-title { font-weight: bold; font-size: 10px; color: #808080; margin-bottom: 4px; text-transform: uppercase; }
+        .gadget-content { display: flex; flex-direction: column; gap: 3px; }
+        .gadget-item { display: flex; justify-content: space-between; gap: 8px; }
+        .gadget-bar { width: 60px; height: 8px; border: 1px inset #808080; background: white; }
+        .gadget-fill { height: 100%; background: linear-gradient(90deg, #00a800, #00c000); }
+        .gadget-fill.energy { background: linear-gradient(90deg, #ffd700, #ffed4a); }
+        .gadget-fill.health { background: linear-gradient(90deg, #ff4444, #ff7777); }
+        .gadget-fill.connections { background: linear-gradient(90deg, #32cd32, #7fff7f); }
+        .status-gadget { top: 10px; right: 150px; width: 180px; }
+        .calendar-gadget { top: 140px; right: 10px; width: 140px; background: #e8f0ff; }
+        .calendar-day { font-size: 24px; font-weight: bold; color: #000080; text-align: center; }
+        .calendar-date { text-align: center; margin-top: 4px; }
+        .sticky-note {
+            top: 300px; right: 20px; width: 160px; min-height: 80px; background: #ffffc0;
+            font-family: "Comic Sans MS", cursive; font-size: 11px; line-height: 1.5;
+        }
+        
+        /* Taskbar */
+        #taskbar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 28px;
+            background: #c0c0c0; border-top: 2px solid #dfdfdf; display: flex; align-items: center;
+            padding: 2px 2px; z-index: 9998;
+        }
+        #start-button {
+            height: 22px; padding: 2px 6px 2px 4px; background: #c0c0c0; border: none; cursor: pointer;
+            display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 11px;
+        }
+        #start-button:active { border: 2px inset #808080; padding: 3px 5px 1px 3px; }
+        .taskbar-divider { width: 2px; height: 22px; margin: 0 2px; border-left: 1px solid #808080; border-right: 1px solid #dfdfdf; }
+        #taskbar-windows { flex: 1; display: flex; gap: 2px; overflow: hidden; }
+        .taskbar-item {
+            min-width: 120px; max-width: 160px; height: 22px; padding: 2px 4px; background: #c0c0c0;
+            border: none; font-size: 11px; text-align: left; cursor: pointer; display: flex;
+            align-items: center; gap: 4px; overflow: hidden; white-space: nowrap;
+        }
+        .taskbar-item.active { border: 2px inset #808080; padding: 3px 3px 1px 3px; }
+        .taskbar-item:not(.active) { border: 2px outset #dfdfdf; }
+        .taskbar-clock { margin-left: auto; padding: 0 8px; border-left: 1px solid #808080; border-right: 1px solid #dfdfdf; height: 22px; display: flex; align-items: center; font-size: 11px; }
+        
+        /* Start Menu */
+        #start-menu {
+            position: fixed; bottom: 28px; left: 0; width: 180px; background: #c0c0c0;
+            border: 2px outset #dfdfdf; display: none; z-index: 9999;
+        }
+        #start-menu.show { display: block; }
+        .start-menu-sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 24px; background: linear-gradient(180deg, #000080, #1084d0); }
+        .sidebar-text {
+            position: absolute; bottom: 8px; left: 4px; color: white; font-size: 14px; font-weight: bold;
+            writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 2px;
+        }
+        .start-menu-items { margin-left: 24px; padding: 2px 0; }
+        .menu-item { padding: 6px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 11px; }
+        .menu-item:hover { background: #000080; color: white; }
+        .menu-item-icon { font-size: 16px; }
+        .menu-divider { height: 1px; background: #808080; margin: 4px 24px 4px 28px; border-bottom: 1px solid #dfdfdf; }
+        
+        /* Windows */
+        .win98-window {
+            position: absolute; background: #c0c0c0; border: 2px outset #dfdfdf; box-shadow: 1px 1px 0 #000; min-width: 200px; min-height: 100px;
+        }
+        .window-titlebar {
+            height: 20px; background: linear-gradient(90deg, #000080, #1084d0); padding: 2px 3px; display: flex;
+            align-items: center; gap: 3px; cursor: move;
+        }
+        .window-titlebar.inactive { background: linear-gradient(90deg, #808080, #a0a0a0); }
+        .titlebar-icon { font-size: 12px; }
+        .titlebar-text { color: white; font-size: 11px; font-weight: bold; flex: 1; white-space: nowrap; overflow: hidden; }
+        .titlebar-buttons { display: flex; gap: 2px; }
+        .titlebar-btn {
+            width: 16px; height: 14px; background: #c0c0c0; border: none; font-size: 9px; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
+        }
+        .titlebar-btn:active { box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf; }
+        .window-content { padding: 8px; background: #c0c0c0; overflow: auto; }
+        
+        /* Controls */
+        .win98-btn {
+            padding: 4px 12px; background: #c0c0c0; border: none; font-size: 11px; cursor: pointer;
+            box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf, inset -2px -2px 0 #404040, inset 2px 2px 0 #ffffff;
+        }
+        .win98-btn:hover { background: #d4d4d4; }
+        .win98-btn:active { box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf, inset 2px 2px 0 #404040, inset -2px -2px 0 #ffffff; }
+        
+        /* Status Bar */
+        .status-bar { height: 20px; background: #c0c0c0; border-top: 2px solid #dfdfdf; padding: 2px 4px; display: flex; align-items: center; gap: 10px; font-size: 11px; margin-top: 4px; }
+        .status-section { padding: 1px 6px; border: 1px inset #808080; background: white; }
+        
+        /* Group Box */
+        .group-box { border: 1px inset #808080; padding: 12px 8px 8px 8px; margin: 8px 4px; position: relative; }
+        .group-box-title { position: absolute; top: -8px; left: 8px; background: #c0c0c0; padding: 0 4px; font-size: 11px; }
+        
+        /* Task List */
+        .task-item { background: white; border: 2px inset #808080; padding: 8px; margin: 6px 0; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .task-tag { font-size: 10px; padding: 2px 6px; color: white; }
+        .task-tag.urgent { background: #c00000; }
+        .task-tag.important { background: #c07800; }
+        .task-tag.normal { background: #0000c0; }
+        .task-tag.service { background: #008000; }
+        .task-tag.event { background: #800080; }
+        .task-options { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+        .task-option {
+            padding: 6px 10px; background: #dfdfdf; border: none; text-align: left; cursor: pointer;
+            font-size: 11px; line-height: 1.5; box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
+        }
+        .task-option:hover { background: #c8d8f8; }
+        .task-option:active { box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf; }
+        .task-option .option-cost { float: right; font-size: 10px; color: #c00; font-weight: bold; margin-left: 8px; }
+        
+        /* Character Grid */
+        .char-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .char-card { border: 2px inset #808080; padding: 6px; text-align: center; background: #dfdfdf; }
+        .char-avatar { font-size: 28px; display: block; margin-bottom: 4px; }
+        .char-name { font-size: 11px; font-weight: bold; }
+        .char-role { font-size: 10px; color: #666; }
+        .char-opinion { font-size: 10px; margin-top: 4px; }
+        .opinion-bar { border: 1px inset #808080; height: 8px; background: white; margin-top: 2px; }
+        .opinion-fill { height: 100%; }
+        
+        /* Message List */
+        .message-item { background: white; border: 2px inset #808080; padding: 6px; margin: 4px 0; }
+        .msg-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .msg-emoji { font-size: 16px; }
+        .msg-sender { font-weight: bold; font-size: 11px; }
+        .msg-time { color: #666; font-size: 10px; margin-left: auto; }
+        .msg-content { font-size: 11px; line-height: 1.4; }
+        .msg-positive { border-left: 3px solid #008000; }
+        .msg-negative { border-left: 3px solid #c00000; }
+        .msg-neutral { border-left: 3px solid #000080; }
+        
+        /* Achievement Grid */
+        .achievement-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .achievement-item { border: 2px inset #808080; padding: 6px; text-align: center; background: #dfdfdf; }
+        .achievement-item.locked { opacity: 0.6; }
+        .achievement-icon { font-size: 24px; display: block; margin-bottom: 2px; }
+        .achievement-name { font-size: 10px; font-weight: bold; }
+        .achievement-desc { font-size: 9px; color: #666; }
+        
+        /* Ending List */
+        .ending-item { border: 2px inset #808080; padding: 6px; margin: 4px 0; display: flex; align-items: center; gap: 8px; }
+        .ending-item.unlocked { background: #90ee90; }
+        .ending-icon { font-size: 20px; }
+        .ending-name { font-weight: bold; font-size: 11px; }
+        .ending-desc { font-size: 10px; color: #666; }
+        
+        /* Save Slots */
+        .save-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .save-slot { border: 2px inset #808080; padding: 8px; text-align: center; cursor: pointer; background: #dfdfdf; }
+        .save-slot.empty { border-style: dashed; opacity: 0.6; }
+        .save-slot:hover { background: #c8d8f8; }
+        
+        /* Notification/Toast */
+        .notification-toast {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #ffffd0; border: 3px double #808080; padding: 16px 32px; font-size: 13px;
+            z-index: 10000; display: none; text-align: center; box-shadow: 8px 8px 16px rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease-out; max-width: 80%;
+        }
+        .notification-toast.show { display: block; }
+        
+        /* Warning Popup */
+        .warning-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #fff0f0; border: 3px double #c00000; padding: 20px 40px; font-size: 13px;
+            z-index: 10001; display: none; text-align: center; box-shadow: 8px 8px 16px rgba(0,0,0,0.4);
+            animation: shake 0.5s ease-in-out; max-width: 80%;
+        }
+        .warning-popup.show { display: block; }
+        .warning-title { color: #c00000; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0); }
+            25% { transform: translate(-50%, -50%) rotate(-2deg); }
+            75% { transform: translate(-50%, -50%) rotate(2deg); }
+        }
+        
+        /* Success Popup */
+        .success-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #f0fff0; border: 3px double #008000; padding: 20px 40px; font-size: 13px;
+            z-index: 10001; display: none; text-align: center; box-shadow: 8px 8px 16px rgba(0,0,0,0.4);
+            animation: successPop 0.5s ease-out; max-width: 80%;
+        }
+        .success-popup.show { display: block; }
+        .success-title { color: #008000; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        @keyframes successPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        /* Floating Feedback */
+        .floating-feedback {
+            position: fixed; font-size: 16px; font-weight: bold; padding: 8px 16px; border-radius: 4px;
+            z-index: 9999; pointer-events: none; animation: floatUp 1.5s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            50% { opacity: 0.9; transform: translateY(-30px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+        }
+        .feedback-positive { background: #90ee90; border: 2px solid #008000; color: #006000; }
+        .feedback-negative { background: #ffcccc; border: 2px solid #c00000; color: #800000; }
+        .feedback-neutral { background: #cce0ff; border: 2px solid #000080; color: #000080; }
+        
+        /* Ending Screen */
+        #ending-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000080;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10000; color: white;
+        }
+        #ending-screen.show { display: flex; }
+        .ending-icon { font-size: 80px; margin-bottom: 20px; }
+        .ending-title { font-size: 40px; font-weight: bold; margin-bottom: 20px; color: #ffd700; text-shadow: 2px 2px 0 #000; }
+        .ending-desc { font-size: 18px; max-width: 500px; text-align: center; line-height: 1.6; margin-bottom: 30px; }
+        .ending-stats { background: rgba(255,255,255,0.1); padding: 20px 40px; border: 2px inset #dfdfdf; margin-bottom: 30px; font-size: 14px; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 16px; height: 16px; }
+        ::-webkit-scrollbar-track { background: #c0c0c0; border: 1px solid #808080; }
+        ::-webkit-scrollbar-thumb { background: #c0c0c0; border: 2px outset #dfdfdf; }
+        ::-webkit-scrollbar-button { background: #c0c0c0; border: 2px outset #dfdfdf; height: 16px; width: 16px; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 16px; height: 16px; }
+        ::-webkit-scrollbar-track { background: #c0c0c0; border: 1px solid #808080; }
+        ::-webkit-scrollbar-thumb { background: #c0c0c0; border: 2px outset #dfdfdf; }
+        ::-webkit-scrollbar-button { background: #c0c0c0; border: 2px outset #dfdfdf; height: 16px; width: 16px; }
+        
+        /* Fish Button */
+        #desk-pet { position: fixed; bottom: 100px; right: 30px; z-index: 1000; cursor: grab; user-select: none; transition: none; display: none; }
+        #desk-pet:active { cursor: grabbing; }
+        #desk-pet .pet-body { position: relative; width: 80px; height: 80px; }
+        #desk-pet .pet-face { width: 80px; height: 80px; background: linear-gradient(135deg, #c0c0c0, #a0a0a0); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #dfdfdf, 0 4px 12px rgba(0,0,0,0.3); position: relative; z-index: 2; transition: transform 0.3s; cursor: pointer; }
+        #desk-pet .pet-face:hover { transform: scale(1.15); }
+        #desk-pet .pet-face:active { transform: scale(0.9); }
+        #desk-pet .pet-shadow { width: 50px; height: 8px; background: rgba(0,0,0,0.15); border-radius: 50%; margin: 4px auto 0; }
+        #desk-pet .pet-label { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        #desk-pet:hover .pet-label { opacity: 1; }
+        #desk-pet.walking { animation: petBounce 0.4s ease-in-out infinite; }
+        @keyframes petBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes petFlip { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+        
+        /* ========== 响应式设计 ========== */
+        @media screen and (max-width: 1024px) {
+            /* 笔记本屏幕优化 */
+            .win98-window {
+                min-width: 300px;
+                max-width: 95vw;
+            }
+            
+            #task-window {
+                width: 90vw !important;
+                left: 5vw !important;
+            }
+            
+            .desktop-gadget {
+                transform: scale(0.9);
+                transform-origin: top right;
+            }
+            
+            .sticky-note {
+                width: 140px;
+                min-height: 60px;
+            }
+            
+            .status-gadget {
+                width: 160px;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            /* 平板和手机 */
+            .desktop-gadget {
+                display: none;
+            }
+            
+            .desktop-icon {
+                display: none;
+            }
+            
+            .win98-window {
+                min-width: 280px;
+                max-width: 98vw;
+            }
+            
+            #task-window {
+                width: 98vw !important;
+                left: 1vw !important;
+                height: auto !important;
+                top: 20px !important;
+            }
+            
+            #desk-pet {
+                bottom: 100px;
+                right: 30px;
+            }
+            
+            .task-item {
+                padding: 10px;
+                margin: 8px 0;
+            }
+            
+            .task-option {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 窗口最大宽度限制 */
+        @media screen and (min-width: 1400px) {
+            .win98-window {
+                max-width: 800px;
+            }
+            
+            #task-window {
+                width: 750px !important;
+            }
+        }
+        
+        /* 辅助动画 */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Intro Screen -->
+    <div id="intro-screen">
+        <div class="intro-title">📜 序章</div>
+        <div class="intro-text" id="intro-text">
+            <p>窗外是七月的阳光，你手里攥着那张印着<span class="intro-highlight">"中共××市委办公厅"</span>字样的调令。</p>
+            <br>
+            <p>说实话，你有点紧张。</p>
+            <br>
+            <p>报到前，你特意请教了一位退休的老前辈。他意味深长地说：</p>
+            <br>
+            <p class="intro-highlight">"在机关工作啊，能力是一方面，更重要的是要懂得'规矩'。"</p>
+            <br>
+            <p>"什么规矩？"你问。</p>
+            <br>
+            <p>老前辈笑了笑："等你进去了，自然就懂了。"</p>
+            <br>
+            <div class="intro-divider"></div>
+            <p style="color:#ffd700;font-weight:bold;">🎯 选择你的入职方式（这将影响你的初始属性）</p>
+        </div>
+        <div class="intro-choices" id="intro-choices">
+            <button class="intro-choice" onclick="selectIntro('way', 0)">
+                🏛️ <strong>普通遴选</strong> - 千军万马过独木桥考进来的<br>
+                <small>起始属性均衡，需要自己摸索机关规则</small>
+            </button>
+            <button class="intro-choice" onclick="selectIntro('way', 1)">
+                🚀 <strong>人才引进</strong> - 博士学历直接入职<br>
+                <small>起点高，但可能不太懂人情世故</small>
+            </button>
+            <button class="intro-choice" onclick="selectIntro('way', 2)">
+                🎖️ <strong>军转干部</strong> - 从部队转业到地方<br>
+                <small>承压能力强，但需要适应新环境</small>
+            </button>
+            <button class="intro-choice" onclick="selectIntro('way', 3)">
+                📋 <strong>借调人员</strong> - 从下级单位借调来的<br>
+                <small>身份特殊，随时可能被退回</small>
+            </button>
+            <button class="intro-choice" onclick="selectIntro('way', 4)">
+                👨‍👩‍👧‍👦 <strong>关系户</strong> - 有人打招呼进来的<br>
+                <small>起点高，但领导和同事期望也高</small>
+            </button>
+        </div>
+    </div>
+
+    <!-- Day Transition Overlay -->
+    <div id="day-transition" class="overlay-hidden">
+        <div class="transition-stars" id="transition-stars"></div>
+        <div class="transition-content">
+            <div class="transition-icon">🌙</div>
+            <div class="transition-text">一天过去了...</div>
+            <div class="transition-subtext">第 <span id="transition-day">1</span> 天结束</div>
+            <div class="transition-progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+        <div class="welcome-emblem"></div>
+        <div class="welcome-title">体制内模拟器</div>
+        <div class="welcome-subtitle">OFFICIAL SIMULATOR</div>
+        <div class="welcome-tagline">★ 为人民服务 ★</div>
+        <button class="welcome-btn" onclick="startGame()">开始工作</button>
+        <div class="welcome-tips" style="position:absolute;bottom:30px;color:#87ceeb;font-size:11px;text-align:center;">
+            提示：拖动窗口标题栏可移动窗口<br>
+            点击桌面图标或使用开始菜单打开程序
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <div id="desktop">
+        <div class="desktop-icon" ondblclick="openWindow('task-window')" style="position:absolute;top:10px;left:10px;">
+            <span class="icon-img">📋</span>
+            <span class="icon-label">工作任务</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openWindow('character-window')" style="position:absolute;top:90px;left:10px;">
+            <span class="icon-img">👥</span>
+            <span class="icon-label">人物关系</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openWindow('message-window')" style="position:absolute;top:170px;left:10px;">
+            <span class="icon-img">💬</span>
+            <span class="icon-label">消息通知</span>
+        </div>
+        <div class="desktop-gadget status-gadget" id="status-gadget">
+            <div class="gadget-title">工作状态</div>
+            <div class="gadget-content">
+                <div class="gadget-item">
+                    <span>⚡ 精力</span>
+                    <div class="gadget-bar"><div class="gadget-fill energy" id="gadget-energy" style="width:100%"></div></div>
+                </div>
+                <div class="gadget-item">
+                    <span>❤️ 健康</span>
+                    <div class="gadget-bar"><div class="gadget-fill health" id="gadget-health" style="width:100%"></div></div>
+                </div>
+                <div class="gadget-item">
+                    <span>🤝 人脉</span>
+                    <div class="gadget-bar"><div class="gadget-fill connections" id="gadget-connections" style="width:50%"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="desktop-gadget calendar-gadget">
+            <div class="gadget-title">日历</div>
+            <div class="calendar-day" id="gadget-day">1</div>
+            <div class="calendar-date" id="gadget-date">第1天</div>
+        </div>
+        <div class="desktop-gadget sticky-note" id="sticky-note">
+            <div id="sticky-content" style="padding-top:20px;font-size:11px;line-height:1.8;">
+                <strong>📝 今日便签：</strong><br>
+                <span id="sticky-text">材料不过三遍不算完</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div id="taskbar">
+        <button id="start-button" onclick="toggleStartMenu()">
+            <span class="start-icon">🏠</span>
+            <span>开始</span>
+        </button>
+        <div class="taskbar-divider"></div>
+        <div id="taskbar-windows"></div>
+        <div class="taskbar-clock" id="taskbar-clock">09:00</div>
+    </div>
+
+    <!-- Start Menu -->
+    <div id="start-menu">
+        <div class="start-menu-sidebar"><span class="sidebar-text">机关</span></div>
+        <div class="start-menu-items">
+            <div class="menu-item" onclick="newGame()"><span class="menu-item-icon">📄</span><span>新游戏</span></div>
+            <div class="menu-item" onclick="openSaveWindow()"><span class="menu-item-icon">💾</span><span>存档/读档</span></div>
+            <div class="menu-item" onclick="clearSave()"><span class="menu-item-icon">🗑️</span><span>清除存档</span></div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" onclick="openWindow('character-window')"><span class="menu-item-icon">👥</span><span>人物关系</span></div>
+            <div class="menu-item" onclick="openWindow('task-window')"><span class="menu-item-icon">📋</span><span>工作任务</span></div>
+            <div class="menu-item" onclick="openWindow('message-window')"><span class="menu-item-icon">💬</span><span>消息通知</span></div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" onclick="openWindow('achievement-window')"><span class="menu-item-icon">🏆</span><span>成就</span></div>
+            <div class="menu-item" onclick="openWindow('ending-window')"><span class="menu-item-icon">📜</span><span>结局收集</span></div>
+        </div>
+    </div>
+
+    <!-- Windows -->
+    <div id="windows-container">
+        <div class="win98-window" id="character-window" style="left:440px;top:80px;width:340px;display:none;">
+            <div class="window-titlebar" onmousedown="startDrag(event, 'character-window')">
+                <span class="titlebar-icon">👥</span>
+                <span class="titlebar-text">人物关系</span>
+                <div class="titlebar-buttons">
+                    <button class="titlebar-btn" onclick="event.stopPropagation();minimizeWindow('character-window')">_</button>
+                    <button class="titlebar-btn" onclick="event.stopPropagation();closeWindow('character-window')">×</button>
+                </div>
+            </div>
+            <div class="window-content"><div class="char-grid" id="char-grid"></div></div>
+        </div>
+        <div class="win98-window" id="task-window" style="left:100px;top:80px;width:680px;height:450px;">
+            <div class="window-titlebar" onmousedown="startDrag(event, 'task-window')">
+                <span class="titlebar-icon">📋</span>
+                <span class="titlebar-text">工作任务</span>
+                <div class="titlebar-buttons">
+                    <button class="titlebar-btn" onclick="event.stopPropagation();minimizeWindow('task-window')">_</button>
+                    <button class="titlebar-btn" onclick="event.stopPropagation();closeWindow('task-window')">×</button>
+                </div>
+            </div>
+            <div class="window-content" id="task-list" style="height:calc(100% - 44px);overflow-y:auto;">
+                <p style="text-align:center;color:#666;padding:40px;">正在加载任务...</p>
+            </div>
+            <div class="status-bar">
+                <span class="status-section" id="status-position">💼 科员</span>
+                <span class="status-section" id="status-day">📅 第1天</span>
+                <span class="status-section" id="status-reputation">⭐ 声望: 50</span>
+                <span class="status-section" id="status-exp">📊 经验: 0</span>
+            </div>
+        </div>
+        <div class="win98-window" id="message-window" style="left:800px;top:80px;width:340px;height:400px;display:none;">
+            <div class="window-titlebar" onmousedown="startDrag(event, 'message-window')">
+                <span class="titlebar-icon">💬</span>
+                <span class="titlebar-text">消息通知</span>
+                <div class="titlebar-buttons">
+                    <button class="titlebar-btn" onclick="event.stopPropagation();minimizeWindow('message-window')">_</button>
+                    <button class="titlebar-btn" onclick="event.stopPropagation();closeWindow('message-window')">×</button>
+                </div>
+            </div>
+            <div class="window-content" id="message-list" style="height:calc(100% - 20px);overflow-y:auto;">
+                <p style="text-align:center;color:#666;">暂无消息</p>
+            </div>
+        </div>
+        <div class="win98-window" id="achievement-window" style="left:200px;top:120px;width:400px;display:none;">
+            <div class="window-titlebar" onmousedown="startDrag(event, 'achievement-window')">
+                <span class="titlebar-icon">🏆</span>
+                <span class="titlebar-text">成就</span>
+                <div class="titlebar-buttons">
+                    <button class="titlebar-btn" onclick="event.stopPropagation();minimizeWindow('achievement-window')">_</button>
+                    <button class="titlebar-btn" onclick="event.stopPropagation();closeWindow('achievement-window')">×</button>
+                </div>
+            </div>
+            <div class="window-content"><div class="achievement-grid" id="achievement-grid"></div></div>
+        </div>
+        <div class="win98-window" id="ending-window" style="left:150px;top:100px;width:480px;display:none;">
+            <div class="window-titlebar" onmousedown="startDrag(event, 'ending-window')">
+                <span class="titlebar-icon">📜</span>
+                <span class="titlebar-text">结局收集</span>
+                <div class="titlebar-buttons">
+                    <button class="titlebar-btn" onclick="event.stopPropagation();minimizeWindow('ending-window')">_</button>
+                    <button class="titlebar-btn" onclick="event.stopPropagation();closeWindow('ending-window')">×</button>
+                </div>
+            </div>
+            <div class="window-content" id="ending-list" style="max-height:400px;overflow-y:auto;"></div>
+        </div>
+        <div class="win98-window" id="save-window" style="left:250px;top:150px;width:400px;display:none;">
+            <div class="window-titlebar" onmousedown="startDrag(event, 'save-window')">
+                <span class="titlebar-icon">💾</span>
+                <span class="titlebar-text">存档/读档</span>
+                <div class="titlebar-buttons">
+                    <button class="titlebar-btn" onclick="event.stopPropagation();minimizeWindow('save-window')">_</button>
+                    <button class="titlebar-btn" onclick="event.stopPropagation();closeWindow('save-window')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <p style="margin-bottom:8px;">选择存档槽位：</p>
+                <div class="save-grid" id="save-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="desk-pet">
+        <div class="pet-body">
+            <div class="pet-face">💣</div>
+            <div class="pet-label">摸鱼一下</div>
+            <div class="pet-shadow"></div>
+        </div>
+    </div>
+    <div id="notification-toast" class="notification-toast"></div>
+    <div id="warning-popup" class="warning-popup">
+        <div class="warning-title">⚠️ 出问题了！</div>
+        <div id="warning-text"></div>
+    </div>
+    <div id="success-popup" class="success-popup">
+        <div class="success-title">✨ 表现出色！</div>
+        <div id="success-text"></div>
+    </div>
+    <div id="ending-screen">
+        <div class="ending-icon" id="ending-icon">🌟</div>
+        <div class="ending-title" id="ending-title">结局名称</div>
+        <div class="ending-desc" id="ending-desc">结局描述</div>
+        <div class="ending-stats" id="ending-stats"></div>
+        <button class="win98-btn" onclick="restartGame()" style="margin-top:20px;padding:10px 30px;font-size:14px;">🔄 重新开始</button>
+        <button class="win98-btn" onclick="continueGame()" style="margin-top:20px;padding:10px 30px;font-size:14px;margin-left:10px;">▶️ 继续玩</button>
+    </div>
+
+    <!-- ========== 移动端 App 容器 ========== -->
+    <div id="mobile-app" style="display:none;">
+        <div id="mobile-status-bar">
+            <div class="sr1">
+                <span class="sp" id="mpos">💼 科员</span>
+                <span class="sd" id="mday">📅 第1天</span>
+            </div>
+            <div class="sb">
+                <span class="si">⚡<div class="sbb"><div class="sbf en" id="menergy" style="width:100%"></div></div></span>
+                <span class="si">❤️<div class="sbb"><div class="sbf hl" id="mhealth" style="width:100%"></div></div></span>
+                <span class="si">🤝<div class="sbb"><div class="sbf cn" id="mconnect" style="width:50%"></div></div></span>
+                <span class="si" style="font-size:10px;">⭐<span id="mrep">50</span></span>
+                <span class="si" style="font-size:10px;">📊<span id="mexp">0</span></span>
+            </div>
+        </div>
+        <div id="mobile-content"></div>
+        <button id="mobile-fish-btn" class="win98-btn" onclick="mobileFishDay()" title="摸鱼下班">🐟<span class="fish-label">摸鱼下班</span></button>
+        <div id="mobile-nav">
+            <button class="mnv ac" onclick="mobileSwitchTab('tasks')"><span class="ni">📋</span><span class="nl">任务</span></button>
+            <button class="mnv" onclick="mobileSwitchTab('chars')"><span class="ni">👥</span><span class="nl">人物</span></button>
+            <button class="mnv" onclick="mobileSwitchTab('msgs')"><span class="ni">💬</span><span class="nl">消息</span></button>
+            <button class="mnv" onclick="mobileSwitchTab('achs')"><span class="ni">🏆</span><span class="nl">成就</span></button>
+            <button class="mnv" onclick="mobileSwitchTab('settings')"><span class="ni">⚙️</span><span class="nl">设置</span></button>
+        </div>
+        <div id="mobile-panel"></div>
+    </div>
+    <div class="mto" id="mobile-toast"><div id="mobile-toast-text"></div></div>
+    <div class="mto" id="mobile-warning" style="background:#fff0f0;border:3px double #c00000;"><div style="color:#c00000;font-weight:bold;font-size:16px;margin-bottom:10px;">⚠️ 警告</div><div id="mobile-warning-text"></div></div>
+    <div class="mto" id="mobile-success" style="background:#f0fff0;border:3px double #008000;"><div style="color:#008000;font-weight:bold;font-size:16px;margin-bottom:10px;">✨ 好消息！</div><div id="mobile-success-text"></div></div>
+
+    <script>
+        let gameState = {
+            hasStartedGame: false, // 是否已经完成序章
+            introStep: 0, selectedWay: -1, selectedTalent: null,
+            day: 1, hour: 9, position: 0, reputation: 50, exp: 0, workAbility: 50, execAbility: 50,
+            commAbility: 50, stressAbility: 50, energy: 100, connections: 50, health: 100,
+            tasks: [], completedTasks: 0, totalChoices: 0, principlesStuck: 0, fishCount: 0,
+            consecutiveFish: 0, mistakeCount: 0, healthLowDays: 0, zeroConnectionsDays: 0,
+            messages: [], characters: {
+                director: { name: '王主任', role: '直接领导', opinion: 50, emoji: '👨‍💼' },
+                boss: { name: '李局长', role: '分管局长', opinion: 50, emoji: '👴' },
+                colleague: { name: '李姐', role: '科室同事', opinion: 60, emoji: '👩' },
+                subordinate: { name: '小张', role: '年轻下属', opinion: 70, emoji: '🧑' },
+                public: { name: '服务对象', role: '人民群众', opinion: 50, emoji: '👥' },
+                self: { name: '自己', role: '自我反思', opinion: 50, emoji: '🧘' }
+            }, unlockedEndings: [], achievements: [], saveSlots: [null, null, null, null, null], todayReflections: [], talents: [],
+            promotionExam: null, promotionExamDay: 0, lastPhase: '',
+            warningHistory: {}, lastNarrativeDay: -1
+        };
+
+        const POSITIONS = ['科员', '副主任科员', '主任科员', '副科长', '科长', '副处长', '处长', '副局长', '局长'];
+        
+        const BACKGROUNDS = [
+            { name: '普通遴选', desc: '均衡', effect: {} },
+            { name: '人才引进', desc: '高起点', effect: { workAbility: 10, commAbility: -5 } },
+            { name: '军转干部', desc: '承压强', effect: { stressAbility: 15, commAbility: -10 } },
+            { name: '借调人员', desc: '身份特殊', effect: { connections: -10 } },
+            { name: '关系户', desc: '有背景', effect: { connections: 20, reputation: 10 } }
+        ];
+
+        const TALENTS = [
+            { id: 'social', name: '社牛属性', icon: '🗣️', desc: '擅长和任何人聊天，沟通效果+20%', rarity: 'rare', effect: { commBoost: 0.2 } },
+            { id: 'writer', name: '材料高手', icon: '📚', desc: '写材料又快又好，文字任务精力消耗-30%', rarity: 'rare', effect: { writerBoost: 0.3 } },
+            { id: 'hardworker', name: '卷王体质', icon: '🏃', desc: '任劳任怨，加班健康消耗减半，但压力会累积', rarity: 'legendary', effect: { overtimeHealth: 0.5 } },
+            { id: 'oldschool', name: '老油条', icon: '😎', desc: '深谙职场规则，人脉消耗-30%，但声望提升较慢', rarity: 'rare', effect: { connectionCost: 0.7, reputationBoost: 0.7 } },
+            { id: 'connected', name: '关系户', icon: '🎯', desc: '有背景有人罩，起始人脉+20，但领导期望更高', rarity: 'legendary', effect: { bonusConnections: 20, bossExpectation: 1.2 } },
+            { id: 'cute', name: '小白兔', icon: '👶', desc: '纯真善良容易被打动，初始声望+15，但容易受伤', rarity: 'normal', effect: { bonusReputation: 15, stressVulnerable: 1.3 } },
+            { id: 'ironman', name: '铁人', icon: '💪', desc: '身体素质好，健康消耗-30%，精力恢复更快', rarity: 'rare', effect: { healthCost: 0.7, energyRecovery: 1.2 } },
+            { id: 'actor', name: '影帝', icon: '🎭', desc: '演技出众，负面效果-25%，但正面效果也减半', rarity: 'rare', effect: { negativeReduction: 0.75, positiveReduction: 0.75 } }
+        ];
+
+        const STICKY_NOTES = {
+            humor: [
+                '材料不过三遍不算完',
+                '能打电话别发微信，能发微信别发邮件',
+                '开会坐后排，发言往后靠',
+                '领导夹菜你转桌，你就是最尴尬的',
+                '周末加班叫正常工作日',
+                '年底考核，全靠材料撑场面',
+                '今天能完成的工作，不要拖到明天',
+                '领导的讲话稿，写到他自己都不想改',
+                '酒量就是工作量',
+                '主任叫你是大事，局长叫你是急事',
+                '写材料写到开会前最后一秒才是政治正确',
+                '汇报工作要带着方案去，不要只带着问题',
+                '能自己协调解决的事，不要动不动就找领导',
+                '功劳是领导的，责任是自己的',
+                '在机关，第一印象很重要'
+            ],
+            philosophy: [
+                '人情练达即文章，世事洞明皆学问',
+                '在机关，要耐得住寂寞',
+                '忙而不乱，才是真本事',
+                '干得好不如干得巧',
+                '二八原则：抓住关键的20%',
+                '吃亏是福，吃小亏占大便宜',
+                '枪打出头鸟，木秀于林风必摧之',
+                '难得糊涂，过犹不及',
+                '做事要方，做人要圆',
+                '守正出奇，正道沧桑'
+            ],
+            reflection: [
+                '今天的付出，明天的收获',
+                '每一份认真都不会被辜负',
+                '苦难是成长的阶梯',
+                '选择体制，就是选择了一种生活方式',
+                '不忘初心，方得始终',
+                '不忘本来，才能开辟未来',
+                '人生没有白走的路，每一步都算数',
+                '活得坦荡，才能睡得安稳',
+                '不忘初心，方得始终',
+                '初心易得，始终难守'
+            ]
+        };
+        
+        // Helper function to get random sticky note
+        function getRandomStickyNote() {
+            const allNotes = [
+                ...STICKY_NOTES.humor,
+                ...STICKY_NOTES.philosophy,
+                ...STICKY_NOTES.reflection
+            ];
+            return allNotes[Math.floor(Math.random() * allNotes.length)];
+        }
+        
+        // ========== 任务阶段解锁系统 ==========
+        const TASK_UNLOCK_CONFIG = {
+            phases: [
+                { 
+                    name: '新人期', 
+                    dayStart: 1, 
+                    dayEnd: 10,
+                    categories: ['公文处理', '会议服务', '值班值守'],
+                    description: '基础公文处理和会议服务任务'
+                },
+                { 
+                    name: '成长期', 
+                    dayStart: 11, 
+                    dayEnd: 20,
+                    categories: ['公文处理', '会议服务', '紧急信息', '服务群众', '协调沟通', '后勤保障'],
+                    description: '开始接触紧急事件和群众服务'
+                },
+                { 
+                    name: '成熟期', 
+                    dayStart: 21, 
+                    dayEnd: 30,
+                    categories: ['公文处理', '会议服务', '紧急信息', '服务群众', '协调沟通', '后勤保障', '保密安全', '职场政治', '人际关系'],
+                    description: '参与重要工作和职场关系处理'
+                },
+                { 
+                    name: '资深期', 
+                    dayStart: 31, 
+                    dayEnd: Infinity,
+                    categories: ['公文处理', '会议服务', '紧急信息', '服务群众', '协调沟通', '后勤保障', '保密安全', '职场政治', '人际关系', '文化深度', '文字综合'],
+                    description: '全面参与各项工作，包括文化深度事件'
+                }
+            ],
+            getAvailableCategories: function(day) {
+                for (let i = this.phases.length - 1; i >= 0; i--) {
+                    if (day >= this.phases[i].dayStart) {
+                        return this.phases[i].categories;
+                    }
+                }
+                return this.phases[0].categories;
+            },
+            getCurrentPhase: function(day) {
+                for (let i = this.phases.length - 1; i >= 0; i--) {
+                    if (day >= this.phases[i].dayStart) {
+                        return this.phases[i];
+                    }
+                }
+                return this.phases[0];
+            }
+        };
+        
+        // 难度曲线配置
+        const DIFFICULTY_CONFIG = {
+            getDifficultyMultiplier: function(day, baseDifficulty) {
+                // 基础难度倍数
+                let multiplier = 1.0;
+                
+                // 随天数增加难度（每30天提升10%）
+                multiplier += Math.floor(day / 30) * 0.1;
+                
+                // 职位提升后，任务难度要求更高
+                multiplier += gameState.position * 0.05;
+                
+                return Math.min(multiplier, 2.0); // 最高2倍难度
+            },
+            adjustTimeCost: function(day, baseTimeCost) {
+                // 后期任务时间成本增加
+                if (day > 60) {
+                    return Math.ceil(baseTimeCost * 1.1);
+                }
+                return baseTimeCost;
+            },
+            adjustRewards: function(day, baseExp) {
+                // 后期经验递减（边际效应）
+                if (day > 100) {
+                    return Math.floor(baseExp * 0.8);
+                } else if (day > 200) {
+                    return Math.floor(baseExp * 0.6);
+                }
+                return baseExp;
+            }
+        };
+        
+        const TASK_TEMPLATES = [
+            // 公文处理类
+            { id: 'meeting_notice', category: '公文处理', title: '📋 会议通知',
+              descriptionTemplate: '需要给{{num}}个{{unit_type}}发送{{time}}的专题会议通知。昨天刚发过类似通知，但时间改了。',
+              params: [
+                { name: 'num', values: [5,6,7,8,9,10,11,12,13,14,15] },
+                { name: 'unit_type', values: ['下属单位','街道办','科室','部门','区县','直属部门'] },
+                { name: 'time', values: ['上午','下午','明天上午','明天下午'] }
+              ],
+              difficulty: 'normal', timeCost: 2, sender: 'director',
+              options: [
+                { text: '逐一给10个单位打电话确认收到变更通知', message: '王主任满意地点点头："不错，这种工作态度很好。"', mood: 'positive', reflection: '重要变更要逐一确认，不能怕麻烦', effect: { workAbility: 5, characters: { director: 8 }, exp: 28, reputation: 6 } },
+                { text: '发邮件并等待回复，没回复的再打电话', message: '王主任："也行，但别漏掉了。"', mood: 'neutral', reflection: '工作可以找方法，但要确保万无一失', effect: { workAbility: 2, characters: { director: 2 }, exp: 15, reputation: 2 } },
+                { text: '只发一遍邮件标注"紧急"，觉得他们会看到', message: '第二天有3个单位没收到，王主任很生气："怎么这么马虎！"', mood: 'negative', reflection: '重要工作不能图省事', effect: { workAbility: -8, characters: { director: -15 }, exp: 3, reputation: -10, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'document_proofread', category: '公文处理', title: '📝 重要文件校对',
+              description: '一份要上报市委的400份红头文件需要最后校对。前面已经校过3遍了。',
+              difficulty: 'important', timeCost: 3, sender: 'colleague',
+              options: [
+                { text: '逐字逐句认真核对，特别是专用名词', message: '果然发现"神舟"写成了"神州"！王主任表扬："多亏你仔细！"', mood: 'positive', reflection: '专用名词要仔细核对，不能有侥幸心理', effect: { workAbility: 10, characters: { director: 12, colleague: 5 }, exp: 35, reputation: 10 } },
+                { text: '快速浏览一遍，差不多就行', message: '印刷后发现漏了关键词，王主任："怎么这么不认真！"', mood: 'negative', reflection: '重要文件不能有丝毫侥幸', effect: { workAbility: -5, characters: { director: -10 }, exp: 8, reputation: -8 } },
+                { text: '交给新来的大学生校对吧', message: '新人经验不足还是出错了，王主任震怒："重要工作怎么能交给新手！"', mood: 'negative', reflection: '重要工作不能随便甩锅', effect: { workAbility: -10, characters: { director: -18 }, exp: 5, reputation: -12, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'emergency_report', category: '紧急信息', title: '⚡ 突发事件上报',
+              description: '值班时接到报告：辖区发生交通事故，3人受伤，原因待查。现在是凌晨2点。',
+              difficulty: 'urgent', timeCost: 2, sender: 'boss',
+              options: [
+                { text: '立即上报，先口头再书面', message: '李局长表扬："信息工作就是要快！你做得很好！"', mood: 'positive', reflection: '重大突发事件必须第一时间上报', effect: { workAbility: 12, characters: { boss: 18, director: 10 }, exp: 40, reputation: 15, health: -8 } },
+                { text: '先给王主任打电话请示', message: '李局长知道后："紧急信息要直接报！别层层请示！"', mood: 'negative', reflection: '紧急信息要按程序上报，但不能死板', effect: { workAbility: -5, characters: { boss: -10 }, exp: 10, reputation: -5 } },
+                { text: '等天亮了解清楚再报，觉得不严重', message: '媒体已经报道了！李局长大怒："这是严重渎职！"', mood: 'negative', reflection: '紧急信息迟报漏报后果严重', effect: { workAbility: -20, characters: { boss: -28, director: -20 }, exp: 0, reputation: -25, mistakeCount: 2 } }
+              ]
+            },
+            { id: 'table_arrange', category: '会议服务', title: '🏢 领导座次安排',
+              description: '明天的全市领导干部大会，需要摆放桌牌。名单很长很复杂。',
+              difficulty: 'important', timeCost: 2, sender: 'director',
+              options: [
+                { text: '对照职务表，反复核对顺序', message: '会议圆满成功，王主任："座次是门面，你做得很好！"', mood: 'positive', reflection: '桌牌摆放是门学问，必须严格按职务顺序', effect: { workAbility: 8, characters: { director: 15, boss: 5 }, exp: 32, reputation: 10 } },
+                { text: '凭经验摆放，差不多就行', message: '有领导发现座次不对，面露不悦。王主任："怎么这么粗心！"', mood: 'negative', reflection: '领导座次不能凭经验', effect: { workAbility: -8, characters: { director: -12, boss: -8 }, exp: 8, reputation: -12 } },
+                { text: '让实习生去摆', message: '场面极度尴尬！王主任气坏了："这是给单位丢脸！"', mood: 'negative', reflection: '重要工作不能假手于人', effect: { workAbility: -15, characters: { director: -22, boss: -15 }, exp: 3, reputation: -18, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'mass_complaint', category: '服务群众', title: '👥 群众来访处理',
+              descriptionTemplate: '办公室来了几位情绪激动的群众，反映{{issue}}问题，吵着要见局长。',
+              params: [
+                { name: 'issue', values: ['拆迁补偿','社保问题','噪音投诉','物业纠纷','拖欠工资','教育划片','环境污染','养老待遇'] }
+              ],
+              difficulty: 'service', timeCost: 2, sender: 'public',
+              options: [
+                { text: '耐心倾听，详细记录，承诺答复时间', message: '群众满意离开，还写了感谢信。李姐："你真有耐心！"', mood: 'positive', reflection: '群众工作要将心比心，真诚是最好的方法', effect: { commAbility: 15, characters: { public: 28, colleague: 8 }, exp: 32, reputation: 20, connections: 12 } },
+                { text: '按程序登记，让他们找相关部门', message: '群众不太满意，但也没说什么。', mood: 'neutral', reflection: '按程序办事没问题，但可以做得更好', effect: { commAbility: 3, characters: { public: -5 }, exp: 15, reputation: 2 } },
+                { text: '不耐烦，说局长不在，打发他们走', message: '群众投诉到了市信访局！王主任："这是严重的态度问题！"', mood: 'negative', reflection: '对群众要有感情，态度决定成效', effect: { commAbility: -15, characters: { public: -30, director: -15 }, exp: 5, reputation: -25 } }
+              ]
+            },
+            { id: 'leader_speech', category: '文字综合', title: '✍️ 领导讲话稿起草',
+              description: '李局长要在全市大会上讲话，让你起草一份30分钟的讲话稿。',
+              difficulty: 'important', timeCost: 4, sender: 'boss',
+              options: [
+                { text: '深入调研，收集数据，写得有血有肉', message: '李局长大为赞赏："这才是高水平！有前途！"', mood: 'positive', reflection: '好文章是用脚写出来的，不调研就没有发言权', effect: { workAbility: 18, characters: { boss: 25, director: 15 }, exp: 55, reputation: 25, health: -8 } },
+                { text: '参考往年稿子，改改数据', message: '李局长："稿子还行，但没什么新意。"', mood: 'neutral', reflection: '文字工作要用心，不能应付了事', effect: { workAbility: -5, characters: { boss: -10 }, exp: 18, reputation: -5 } },
+                { text: '网上找一篇，改改名字和地名', message: '稿子里居然还有其他城市的名字！李局长："你给我滚出去！"', mood: 'negative', reflection: '抄袭是文字工作的大忌，人品比文品更重要', effect: { workAbility: -20, characters: { boss: -30, director: -20 }, exp: 5, reputation: -25, mistakeCount: 2 } }
+              ]
+            },
+            { id: 'colleague_help', category: '人际关系', title: '🤝 同事请求帮忙',
+              description: '李姐家里有事，想让你帮她完成本该她做的报表，今天必须交。',
+              difficulty: 'normal', timeCost: 2, sender: 'colleague',
+              options: [
+                { text: '爽快答应，帮她完成', message: '李姐非常感激："好兄弟！以后有事尽管说！"', mood: 'positive', reflection: '赠人玫瑰手有余香，同事之间要互相帮助', effect: { commAbility: 12, characters: { colleague: 20, subordinate: 5 }, exp: 22, reputation: 12, connections: 10 } },
+                { text: '教她方法，让她自己做', message: '李姐有点失望但也接受了。', mood: 'neutral', reflection: '授人以鱼不如授人以渔', effect: { commAbility: 5, characters: { colleague: 3 }, exp: 15, reputation: 3 } },
+                { text: '借口自己也忙，婉言拒绝', message: '李姐很不高兴："这点忙都不帮！"', mood: 'negative', reflection: '同事之间要有人情味，别把路走窄了', effect: { commAbility: -10, characters: { colleague: -18 }, exp: 5, reputation: -8, connections: -5 } }
+              ]
+            },
+            { id: 'night_duty', category: '值班值守', title: '🌙 春节值班',
+              description: '轮到你大年三十值班，同事都想请假回家过年。',
+              difficulty: 'normal', timeCost: 8, sender: 'director',
+              options: [
+                { text: '主动值班，让外地同事回家', message: '大家都很感谢你。王主任："年轻人有担当！"', mood: 'positive', reflection: '关键时刻能见人心，吃亏是福', effect: { commAbility: 15, characters: { colleague: 20, director: 12 }, exp: 45, reputation: 18, health: -15 } },
+                { text: '值班但找同事替半天', message: '还行。王主任没说什么。', mood: 'neutral', reflection: '值班是责任，可以灵活但不能推诿', effect: { commAbility: 3, characters: { colleague: 5, director: -3 }, exp: 22, reputation: 3 } },
+                { text: '找借口请假', message: '大家都有意见了。王主任："年轻人别拈轻怕重！"', mood: 'negative', reflection: '关键时刻顶不上，平时再努力也没用', effect: { commAbility: -12, characters: { colleague: -15, director: -18 }, exp: 5, reputation: -15 } }
+              ]
+            },
+            { id: 'department_coord', category: '协调沟通', title: '📞 部门协调',
+              descriptionTemplate: '需要协调{{dept_count}}个部门共同完成一项紧急任务，但其他部门都不太配合。',
+              params: [
+                { name: 'dept_count', values: [2,3,4,5] },
+                { name: 'dept_type', values: ['财政局','发改委','人社局','住建局','教育局','卫健委','公安局','市场监管局'] }
+              ],
+              difficulty: 'important', timeCost: 3, sender: 'director',
+              options: [
+                { text: '上门沟通，请各部门领导支持配合', message: '任务圆满完成！王主任："协调能力很强！"', mood: 'positive', reflection: '协调工作要有耐心，多换位思考', effect: { commAbility: 18, characters: { director: 15, boss: 10 }, exp: 38, reputation: 18, connections: 15 } },
+                { text: '发正式通知，强调任务重要性', message: '勉强完成了。王主任："方式可以灵活一点。"', mood: 'neutral', reflection: '发通知是必要的，但感情投资更重要', effect: { commAbility: 5, characters: { director: -3 }, exp: 18, reputation: 2 } },
+                { text: '向领导告状，说他们不配合', message: '其他部门对你意见很大。王主任："怎么能这么工作！"', mood: 'negative', reflection: '打小报告是职场大忌，做人留一线', effect: { commAbility: -18, characters: { director: -15, connections: -20 }, exp: 8, reputation: -18 } }
+              ]
+            },
+            { id: 'leader_praise', category: '职场政治', title: '👔 领导表扬',
+              description: '李局长在大会上点名表扬了你，但其实工作主要是李姐做的。',
+              difficulty: 'normal', timeCost: 1, sender: 'boss',
+              options: [
+                { text: '当场说明，功劳是大家的', message: '李姐非常感动，李局长也更欣赏你了。', mood: 'positive', reflection: '不抢功不诿过，是机关工作的大智慧', effect: { commAbility: 18, characters: { colleague: 25, boss: 12, director: 8 }, exp: 30, reputation: 22, connections: 18 } },
+                { text: '接受表扬，事后请李姐吃饭', message: '李姐有点不高兴但接受了。', mood: 'neutral', reflection: '难得糊涂，但要心里有数', effect: { commAbility: -5, characters: { colleague: -8 }, exp: 20, reputation: 5 } },
+                { text: '欣然接受，觉得自己也有功劳', message: '李姐很生气，到处说你坏话。', mood: 'negative', reflection: '抢功是短视行为，人品是立身之本', effect: { commAbility: -15, characters: { colleague: -28, subordinate: -10 }, exp: 15, reputation: -15, connections: -10 } }
+              ]
+            },
+            { id: 'sticky_situation', category: '应急处置', title: '⚠️ 两难选择',
+              description: '王主任让你把报告的数据改得"好看点"，但你知道数据不太符合实际。',
+              difficulty: 'important', timeCost: 2, sender: 'director',
+              options: [
+                { text: '坚持原则，只改明显错误的数据', message: '王主任不太高兴："让你改你就改，怎么这么死板。"但内心认可你的原则性。', mood: 'neutral', reflection: '坚持原则短期可能吃亏，但长期看是好事', effect: { workAbility: 8, characters: { director: -8, boss: 5 }, exp: 28, reputation: 5, principlesStuck: 1 } },
+                { text: '按要求改了，心想反正不是我拍板的', message: '报告顺利过关。但你心里一直不踏实...', mood: 'neutral', reflection: '服从领导也要有底线', effect: { stressAbility: -10, characters: { director: 10 }, exp: 20, reputation: -5 } },
+                { text: '委婉拒绝，说这样可能有问题', message: '王主任脸色一变："这点小事都办不了？"你被调去整理档案了。', mood: 'negative', reflection: '处理这种事需要技巧', effect: { workAbility: -15, characters: { director: -25, boss: -15 }, exp: 10, reputation: -20, connections: -10, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'office_gossip', category: '人际关系', title: '🍵 办公室八卦',
+              description: '李姐悄悄跟你说："听说王主任最近要退休了，位置空出来了..."',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '不参与讨论，只听不说', message: '李姐觉得你稳重可靠。', mood: 'positive', reflection: '祸从口出，少说为妙', effect: { commAbility: 5, characters: { colleague: 8 }, exp: 10, reputation: 5 } },
+                { text: '跟着聊几句，但不说关键信息', message: '李姐觉得你挺有意思。', mood: 'neutral', reflection: '八卦适度可以拉近关系', effect: { commAbility: 3, characters: { colleague: 5 }, exp: 8 } },
+                { text: '积极打听，想知道更多内幕', message: '结果被人传到王主任耳朵里了。', mood: 'negative', reflection: '打探领导动向是大忌', effect: { commAbility: -10, characters: { director: -15, colleague: -10 }, exp: 5, reputation: -12 } }
+              ]
+            },
+            { id: 'reception', category: '接待服务', title: '🤝 上级调研接待',
+              description: '省政府调研组明天来，需要准备接待方案和行程。',
+              difficulty: 'important', timeCost: 3, sender: 'director',
+              options: [
+                { text: '详细踩点，制定两套预案', message: '调研非常顺利！李局长："接待工作非常到位！"', mood: 'positive', reflection: '接待工作要多想一步，多准备一手', effect: { workAbility: 12, characters: { director: 15, boss: 10 }, exp: 35, reputation: 15 } },
+                { text: '参考上次方案做些调整', message: '还可以，但王主任说："要与时俱进，不能照搬。"', mood: 'neutral', reflection: '经验可以参考，但不能生搬硬套', effect: { workAbility: -3, characters: { director: -5 }, exp: 18, reputation: -3 } },
+                { text: '大概安排一下，车到山前必有路', message: '车队绕路超时！王主任："接待无小事你懂不懂！"', mood: 'negative', reflection: '接待工作体现工作作风，细节决定成败', effect: { workAbility: -12, characters: { director: -18, boss: -12 }, exp: 8, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'file_send', category: '公文处理', title: '📤 文件发送',
+              description: '需要发送一份重要文件给10个部门，但系统显示有2个部门接收失败。',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '立即电话联系那2个部门确认', message: '李姐："你真细心！"文件全部到位。', mood: 'positive', reflection: '电子发文后要及时确认签收情况', effect: { workAbility: 6, characters: { colleague: 10 }, exp: 20, reputation: 8 } },
+                { text: '再发一次邮件试试', message: '一个部门收到了，另一个还是没反应。', mood: 'neutral', reflection: '多试几次不如直接打电话', effect: { workAbility: -2, characters: { colleague: -3 }, exp: 10, reputation: -2 } },
+                { text: '系统问题不管了，反正发了', message: '第二天有个部门说没收到，王主任批评："发了不等于收到了！"', mood: 'negative', reflection: '发了不等于收到了，要跟踪确认', effect: { workAbility: -8, characters: { director: -12 }, exp: 5, reputation: -10 } }
+              ]
+            },
+            { id: 'copy_miss', category: '公文处理', title: '🖨️ 复印失误',
+              descriptionTemplate: '领导让你复印一份{{doc_name}}，你快速复印后交给了领导。',
+              params: [
+                { name: 'doc_name', values: ['批示件','会议纪要','领导讲话','机密文件','内部通知','人事档案'] }
+              ],
+              difficulty: 'normal', timeCost: 1, sender: 'director',
+              options: [
+                { text: '复印前先检查是否是双面都有内容', message: '果然是双面！你避免了出错，王主任点头认可。', mood: 'positive', reflection: '复印前必须查看原件是否双面有内容', effect: { workAbility: 8, characters: { director: 10 }, exp: 22, reputation: 8 } },
+                { text: '快速复印，只印了一面', message: '领导拿到复印件，脸色一沉："怎么只有一面？"', mood: 'negative', reflection: '复印工作也要仔细', effect: { workAbility: -8, characters: { director: -15 }, exp: 5, reputation: -10 } }
+              ]
+            },
+            { id: 'meeting_change', category: '会议服务', title: '⏰ 会议变更',
+              description: '会议时间临时提前了，你需要在短时间内通知所有参会人员。',
+              difficulty: 'urgent', timeCost: 2, sender: 'director',
+              options: [
+                { text: '逐一打电话通知，确保每个人都收到', message: '所有人准时到会，王主任："通知很到位！"', mood: 'positive', reflection: '会议变更要逐一通知，不能群发了事', effect: { workAbility: 8, characters: { director: 12 }, exp: 28, reputation: 10 } },
+                { text: '在微信群里发通知', message: '有人没看到，迟到了一会儿。', mood: 'neutral', reflection: '重要变更不能只靠群通知', effect: { workAbility: -3, characters: { director: -5 }, exp: 12, reputation: -3 } },
+                { text: '只通知认识的几个人', message: '有人没收到，会议上被点名批评，王主任很没面子。', mood: 'negative', reflection: '通知不能有遗漏', effect: { workAbility: -12, characters: { director: -20, boss: -10 }, exp: 5, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'typo_check', category: '公文处理', title: '⌨️ 打字核对',
+              description: '你在写"神舟七号"时，输入法联想出了"神州"。',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '仔细核对，没有提交', message: '李姐："好习惯！专用名词要仔细核对。"', mood: 'positive', reflection: '输入法联想词要仔细核对', effect: { workAbility: 6, characters: { colleague: 8 }, exp: 18, reputation: 6 } },
+                { text: '快速扫一眼，没发现问题', message: '还是被领导发现了。王主任："这点事都不注意！"', mood: 'negative', reflection: '输入法联想词很容易出错', effect: { workAbility: -6, characters: { director: -10 }, exp: 8, reputation: -8 } }
+              ]
+            },
+            { id: 'archive_check', category: '公文处理', title: '📁 档案核对',
+              description: '整理档案时发现一份重要文件可能缺失，你需要确认。',
+              difficulty: 'normal', timeCost: 2, sender: 'director',
+              options: [
+                { text: '仔细倒查，确保找到', message: '找到了！王主任："档案工作很重要，你做得很好！"', mood: 'positive', reflection: '档案移交必须逐项核对', effect: { workAbility: 10, characters: { director: 12 }, exp: 28, reputation: 10 } },
+                { text: '觉得可能是记录问题，先放着', message: '后来发现真的缺失了，王主任："怎么不早说！"', mood: 'negative', reflection: '档案问题不能大意', effect: { workAbility: -8, characters: { director: -12 }, exp: 8, reputation: -10 } }
+              ]
+            },
+            { id: 'phone_miss', category: '紧急信息', title: '📱 手机漏接',
+              description: '值夜班时手机没电了，你睡着了。第二天发现有3个未接来电。',
+              difficulty: 'urgent', timeCost: 1, sender: 'boss',
+              options: [
+                { text: '立即回电并道歉，了解情况', message: '还好事情不大。李局长："下次手机要保持畅通。"', mood: 'neutral', reflection: '值夜班手机要保持畅通', effect: { workAbility: -5, characters: { boss: -8 }, exp: 10, reputation: -5 } },
+                { text: '装作没事，等领导问再说', message: '李局长大怒："值班电话都敢不接！"', mood: 'negative', reflection: '值班电话必须接', effect: { workAbility: -15, characters: { boss: -20, director: -15 }, exp: 3, reputation: -18, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'print_urgent', category: '文字综合', title: '🖨️ 紧急印刷',
+              description: '会议30分钟后开始，但发现少印了一份重要材料！',
+              difficulty: 'urgent', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '立刻补印，同时准备一份手写稿应急', message: '领导很高兴："应变能力不错！"', mood: 'positive', reflection: '遇到问题要冷静，多想办法', effect: { workAbility: 12, stressAbility: 12, characters: { colleague: 10, director: 12 }, exp: 35, reputation: 15 } },
+                { text: '赶紧补印，让领导等一下', message: '等了15分钟，领导不太高兴。', mood: 'neutral', reflection: '会议材料要准备预案', effect: { workAbility: -5, characters: { director: -8 }, exp: 12, reputation: -5 } },
+                { text: '和别人共用一份', message: '领导非常不满！王主任："你是不是不想干了！"', mood: 'negative', reflection: '这种低级错误是对领导的不尊重', effect: { workAbility: -15, characters: { director: -22, boss: -15 }, exp: 3, reputation: -20, mistakeCount: 1 } }
+              ]
+            },
+            
+            // ============ 后勤保障类事件 ============
+            { id: 'car_arrange', category: '后勤保障', title: '🚗 领导出行安排',
+              descriptionTemplate: '李局长明天要去{{destination}}，需要安排车辆和司机。行程涉及高速公路，但天气预报说明天有{{weather}}。',
+              params: [
+                { name: 'destination', values: ['省里开会','市里调研','下乡检查','外地考察','邻市交流','基层走访'] },
+                { name: 'weather', values: ['大雨','大雪','高温','大雾','雷暴'] }
+              ],
+              difficulty: 'important', timeCost: 2, sender: 'director',
+              options: [
+                { text: '提前检查车况，准备备用路线，叮嘱司机安全驾驶', message: '行程顺利！王主任："考虑周全，这就对了！"', mood: 'positive', reflection: '安全工作要想到前面，不能心存侥幸', effect: { workAbility: 10, characters: { director: 15, boss: 8 }, exp: 32, reputation: 12 } },
+                { text: '按常规安排，提醒司机注意安全', message: '还行。王主任："下次要考虑天气因素。"', mood: 'neutral', reflection: '安排工作要考虑多方面因素', effect: { workAbility: -3, characters: { director: -3 }, exp: 15, reputation: -3 } },
+                { text: '交给司机自己安排', message: '半路抛锚了！李局长很恼火，王主任被批评了一顿。', mood: 'negative', reflection: '领导出行无小事，细节决定成败', effect: { workAbility: -12, characters: { director: -18, boss: -12 }, exp: 5, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'air_condition', category: '后勤保障', title: '❄️ 空调维修',
+              description: '办公室空调坏了，报修单上写着"压缩机故障，需更换零件，费用约2000元"，但这台空调已经用了8年。',
+              difficulty: 'normal', timeCost: 1, sender: 'director',
+              options: [
+                { text: '建议领导考虑换新机，综合成本更低', message: '王主任赞同："你算得清楚！换！"', mood: 'positive', reflection: '算账要算总账，不能只看眼前', effect: { workAbility: 12, characters: { director: 12 }, exp: 28, reputation: 10 } },
+                { text: '按维修单安排维修', message: '修完不到半年又坏了。王主任："怎么不早说！"', mood: 'negative', reflection: '旧设备维修要谨慎考虑性价比', effect: { workAbility: -8, characters: { director: -12 }, exp: 8, reputation: -10 } }
+              ]
+            },
+            { id: 'supplies_buy', category: '后勤保障', title: '📦 紧急采购',
+              descriptionTemplate: '后天有重要检查，但办公室{{item}}等物资严重不足。供应商说要加急费。',
+              params: [
+                { name: 'item', values: ['打印纸','矿泉水','会议材料','防疫物资','办公用品','饮水机滤芯','硒鼓墨粉'] }
+              ],
+              difficulty: 'urgent', timeCost: 2, sender: 'director',
+              options: [
+                { text: '立即启动应急采购，确保物资到位', message: '检查顺利！王主任："应急意识很强！"', mood: 'positive', reflection: '重要工作要有备无患', effect: { workAbility: 8, characters: { director: 12 }, exp: 25, reputation: 8 } },
+                { text: '先向其他科室借，调配使用', message: '借来了但不够用。王主任："下次提前准备。"', mood: 'neutral', reflection: '应急要先立足自身', effect: { workAbility: -3, characters: { director: -5 }, exp: 12, reputation: -3 } },
+                { text: '先等等看，说不定不用那么多', message: '检查当天傻眼了！领导非常不满。', mood: 'negative', reflection: '重要工作不能侥幸心理', effect: { workAbility: -12, characters: { director: -18 }, exp: 5, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'car_night', category: '后勤保障', title: '🌙 夜间车辆管理',
+              description: '晚上加班结束，发现停车场有辆车没关窗、车灯还亮着。也不知道是谁的车。',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '想办法找到车主，提醒关窗关灯', message: '车主很感激："多亏你了！"', mood: 'positive', reflection: '举手之劳能帮大忙', effect: { commAbility: 10, characters: { colleague: 8 }, exp: 18, reputation: 8 } },
+                { text: '拍张照片发单位群提醒', message: '有人认领了，但觉得被点名有点没面子。', mood: 'neutral', reflection: '提醒也要注意方式', effect: { commAbility: -3, characters: { colleague: -3 }, exp: 10, reputation: -2 } },
+                { text: '反正不是我的事', message: '第二天电瓶没电了，影响了重要工作。', mood: 'negative', reflection: '机关是个大家庭，要有关心意识', effect: { commAbility: -8, characters: { director: -10 }, exp: 5, reputation: -8 } }
+              ]
+            },
+            { id: 'rain_prep', category: '后勤保障', title: '🌧️ 雨季施工',
+              description: '办公楼改造工程在雨季进行，施工队说可以冒雨施工。',
+              difficulty: 'important', timeCost: 1, sender: 'director',
+              options: [
+                { text: '坚决制止，要求做好防雨措施再施工', message: '王主任表扬："安全意识很强！"', mood: 'positive', reflection: '安全责任重于泰山', effect: { workAbility: 10, characters: { director: 12 }, exp: 28, reputation: 10 } },
+                { text: '让施工队自己决定', message: '果然出了质量问题，返工浪费了时间和金钱。', mood: 'negative', reflection: '外包工程也要监管到位', effect: { workAbility: -12, characters: { director: -15 }, exp: 8, reputation: -12 } }
+              ]
+            },
+            { id: 'driver_morning', category: '后勤保障', title: '⏰ 司机迟到',
+              description: '领导8点要去市里开会，但司机小李电话没人接，眼看就要到时间了。',
+              difficulty: 'urgent', timeCost: 1, sender: 'boss',
+              options: [
+                { text: '赶紧联系备用车，同时给小李发信息', message: '及时赶到！李局长："应变能力不错。"', mood: 'positive', reflection: '重要工作要有plan B', effect: { workAbility: 15, stressAbility: 10, characters: { boss: 15, director: 10 }, exp: 35, reputation: 12 } },
+                { text: '给领导解释，司机联系不上', message: '领导脸色不好看，但也没办法。', mood: 'neutral', reflection: '解释不如解决', effect: { workAbility: -8, characters: { boss: -12 }, exp: 10, reputation: -8 } },
+                { text: '一直打电话，等司机回复', message: '领导自己打车去的，在会上发了火。', mood: 'negative', reflection: '遇到紧急情况要想办法，不能干等', effect: { workAbility: -15, characters: { boss: -20, director: -15 }, exp: 3, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'old_cadres_care', category: '后勤保障', title: '👴 老干部用车',
+              description: '退休的老刘主任打来电话，说明天要去医院看病，问能不能派个车。按规定退休干部不配专车了。',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '想办法协调一辆车，哪怕私车公用也要安排', message: '老刘很感动："小张是好人啊！"王主任也认可。', mood: 'positive', reflection: '尊老爱老是美德', effect: { commAbility: 15, characters: { colleague: 12, director: 8 }, exp: 22, reputation: 15, connections: 10 } },
+                { text: '耐心解释政策，建议他打车并报销', message: '老刘有点失望但也接受了。', mood: 'neutral', reflection: '政策执行要讲究方式', effect: { commAbility: -5, characters: { colleague: -5 }, exp: 10, reputation: -3 } },
+                { text: '直接说没有政策依据，不能派车', message: '老刘很伤心，见人就说现在的年轻人不尊重老同志。', mood: 'negative', reflection: '政策是死的，人是活的', effect: { commAbility: -12, characters: { director: -10 }, exp: 5, reputation: -10 } }
+              ]
+            },
+            { id: 'stair_repair', category: '后勤保障', title: '🏗️ 台阶维修',
+              description: '办公楼台阶要修缮，施工单位报了两套方案：正面用花岗岩侧面用水泥，价格差3万。',
+              difficulty: 'normal', timeCost: 1, sender: 'director',
+              options: [
+                { text: '建议统一用花岗岩，保证质量', message: '王主任："做事有品位！就按你说的办！"', mood: 'positive', reflection: '质量是第一位的', effect: { workAbility: 12, characters: { director: 12 }, exp: 28, reputation: 10 } },
+                { text: '按便宜方案来，反正差不多', message: '完工后发现正侧不一致！领导很不满意。', mood: 'negative', reflection: '细节体现品质', effect: { workAbility: -10, characters: { director: -15 }, exp: 8, reputation: -12 } }
+              ]
+            },
+            
+            // ============ 保密安全类事件 ============
+            { id: 'secret_level', category: '保密安全', title: '🔐 文件定密',
+              description: '收到一份调研报告，需要确定密级并报送。报告涉及一些敏感数据，但不确定是否需要定密。',
+              difficulty: 'important', timeCost: 2, sender: 'director',
+              options: [
+                { text: '请示上级保密部门，确定密级后再处理', message: '王主任："稳妥！保密工作来不得半点马虎。"', mood: 'positive', reflection: '保密无小事，定密要准确', effect: { workAbility: 10, characters: { director: 12 }, exp: 28, reputation: 12, connections: 5 } },
+                { text: '凭经验判断，觉得不需要定密直接发', message: '被上级批评："定密不准确！"', mood: 'negative', reflection: '定密不能靠猜', effect: { workAbility: -10, characters: { director: -15 }, exp: 8, reputation: -12, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'computer_shutdown', category: '保密安全', title: '💻 擅自关机',
+              description: '下班时觉得电脑太慢，擅自关闭了电脑。但这台电脑连接着全市的机要内网。',
+              difficulty: 'important', timeCost: 1, sender: 'director',
+              options: [
+                { text: '立即报告IT部门，说明情况', message: '还好发现及时。王主任："以后别擅自操作涉密设备。"', mood: 'neutral', reflection: '涉密设备不能随意操作', effect: { workAbility: -5, characters: { director: -8 }, exp: 10, reputation: -5 } },
+                { text: '装作不知道，等明天再说', message: '第二天被查出！王主任大怒："这是严重的保密违规！"', mood: 'negative', reflection: '出了问题要勇于承认', effect: { workAbility: -18, characters: { director: -22 }, exp: 3, reputation: -20, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'network_security', category: '保密安全', title: '🌐 网络安全',
+              description: 'IT部门说需要在所有电脑上安装新的安全软件，但安装后开机时间会变慢，有同事抱怨。',
+              difficulty: 'normal', timeCost: 1, sender: 'director',
+              options: [
+                { text: '耐心解释，带头安装', message: '王主任："安全是底线！谁都不能搞特殊。"', mood: 'positive', reflection: '安全面前没有特殊化', effect: { workAbility: 8, characters: { director: 10 }, exp: 22, reputation: 8 } },
+                { text: '先等等，让大家适应一下', message: '被上级检查发现，王主任被批评。', mood: 'negative', reflection: '安全要求不能打折扣', effect: { workAbility: -8, characters: { director: -12 }, exp: 8, reputation: -10 } }
+              ]
+            },
+            { id: 'telegraph_delay', category: '保密安全', title: '📨 特提电报',
+              description: '收到一份特提电报，要求立即处理。但已经是晚上11点了，你有点犹豫要不要今晚处理。',
+              difficulty: 'urgent', timeCost: 1, sender: 'boss',
+              options: [
+                { text: '立即处理，这是特提电报！', message: '李局长："特提电报就要特提处理！你做得对！"', mood: 'positive', reflection: '特提电报是最高优先级', effect: { workAbility: 12, characters: { boss: 15 }, exp: 30, reputation: 12, health: -5 } },
+                { text: '明天一早处理，应该问题不大', message: '第二天被严厉批评："特提电报耽误了1个多小时！"', mood: 'negative', reflection: '特提电报的处理时限是以分钟计算的', effect: { workAbility: -15, characters: { boss: -20, director: -15 }, exp: 5, reputation: -18, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'secret_check', category: '保密安全', title: '🔍 保密检查',
+              description: '上级保密部门要来检查，要求提前自查。同事觉得太麻烦，想简单应付一下。',
+              difficulty: 'important', timeCost: 2, sender: 'director',
+              options: [
+                { text: '认真自查，发现问题及时整改', message: '检查顺利通过！王主任："这才是正确态度！"', mood: 'positive', reflection: '自查是保护自己', effect: { workAbility: 12, characters: { director: 15 }, exp: 32, reputation: 15 } },
+                { text: '随便检查一下，差不多就行', message: '被查出问题！王主任被约谈，你也受了批评。', mood: 'negative', reflection: '自查不能走过场', effect: { workAbility: -10, characters: { director: -18 }, exp: 8, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'data_security', category: '保密安全', title: '💾 数据安全',
+              description: '整理文件时发现一份重要数据只有电子版，没有纸质备份。IT同事说硬盘随时可能坏。',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '立即备份，并打印纸质版存档', message: '李姐："你真细心！重要数据要双重备份。"', mood: 'positive', reflection: '数据安全要万无一失', effect: { workAbility: 10, characters: { colleague: 12 }, exp: 25, reputation: 10 } },
+                { text: '先存着，等有空再备份', message: '硬盘真的坏了！数据全丢了。王主任大怒。', mood: 'negative', reflection: '重要数据不能拖', effect: { workAbility: -15, characters: { director: -18 }, exp: 5, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'telegraph_level', category: '保密安全', title: '📋 电报等级',
+              description: '收到一份紧急电报，前任说是"特提"级别，但你觉得"急"就够了。',
+              difficulty: 'normal', timeCost: 1, sender: 'director',
+              options: [
+                { text: '按特提处理，优先办理', message: '王主任："宁可高一级，不可漏报。"你学到了。', mood: 'positive', reflection: '电报等级宁高勿低', effect: { workAbility: 10, characters: { director: 12 }, exp: 28, reputation: 10 } },
+                { text: '按急件处理，觉得问题不大', message: '被批评："特提报成急件，这是大错！"', mood: 'negative', reflection: '电报等级不能随意降级', effect: { workAbility: -12, characters: { director: -18 }, exp: 5, reputation: -12, mistakeCount: 1 } }
+              ]
+            },
+            { id: 'media_interview', category: '保密安全', title: '🎤 媒体采访',
+              description: '有记者打电话要采访，涉及你参与的一个项目。领导不在，你要不要接受采访？',
+              difficulty: 'important', timeCost: 1, sender: 'boss',
+              options: [
+                { text: '婉言谢绝，说需要请示领导', message: '王主任："做得对！未经授权不能擅自接受采访。"', mood: 'positive', reflection: '对外宣传要统一口径', effect: { commAbility: 12, characters: { director: 12, boss: 8 }, exp: 28, reputation: 10 } },
+                { text: '简单介绍一下不敏感的内容', message: '被断章取义报道了！领导很不满意。', mood: 'negative', reflection: '采访要谨慎，言多必失', effect: { commAbility: -12, characters: { director: -15, boss: -12 }, exp: 8, reputation: -15, mistakeCount: 1 } }
+              ]
+            },
+            
+            // ============ 文化深度类事件 ============
+            { id: 'office_philosophy', category: '文化深度', title: '💭 工作感悟', type: 'reflection',
+              description: '连续加班一周后，你坐在办公室里，看着窗外的夜色，陷入了沉思...',
+              difficulty: 'normal', timeCost: 1, sender: 'self',
+              options: [
+                { text: '回想这一周的工作，思考自己的成长', message: '你发现自己在压力下成长了很多，这就是历练。', mood: 'positive', reflection: '苦难是成长的阶梯', effect: { stressAbility: 10, reputation: 5 } },
+                { text: '想想体制内的工作，值得吗？', message: '你想起了老前辈的话："在机关，要耐得住寂寞。"', mood: 'neutral', reflection: '选择体制就是选择一种生活方式', effect: { stressAbility: 5 } },
+                { text: '觉得不公平，为什么总是我加班？', message: '这种心态让你更加疲惫...', mood: 'negative', reflection: '抱怨解决不了问题', effect: { stressAbility: -10, reputation: -5 } }
+              ]
+            },
+            { id: 'principle_dilemma', category: '文化深度', title: '⚖️ 原则与现实', type: 'dilemma',
+              description: '王主任让你在一份报告里"调整"几个数字，让数据看起来更好看。你知道这些数字有点问题。',
+              difficulty: 'important', timeCost: 1, sender: 'director',
+              options: [
+                { text: '坚持原则，只改错误的数据', message: '王主任不太高兴，但内心认可你的原则性。你的内心也很平静。', mood: 'neutral', reflection: '坚持原则短期吃亏，长期受益', effect: { principlesStuck: 1, reputation: 5, stressAbility: -5 } },
+                { text: '按要求改，心想这是领导让改的', message: '报告顺利过关。但你心里一直有个疙瘩...', mood: 'neutral', reflection: '服从领导也要有底线', effect: { stressAbility: -10, characters: { director: 8 }, reputation: -5 } },
+                { text: '委婉拒绝，说这样可能有问题', message: '王主任脸色一变："让你改你就改！"你被调去整理档案了。', mood: 'negative', reflection: '处理这种事需要技巧，但底线不能丢', effect: { workAbility: -12, characters: { director: -18 }, stressAbility: -15 } }
+              ]
+            },
+            { id: 'old_colleague_wisdom', category: '文化深度', title: '👨‍🏫 老同事的智慧', type: 'progressive',
+              description: '李姐在机关干了20年，有一天她看你太累，跟你说了几句肺腑之言...',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '认真听她的建议', message: '李姐说："在机关，干得好不如干得巧。要学会二八原则。"', mood: 'positive', reflection: '工作中要抓重点，不能眉毛胡子一把抓', effect: { commAbility: 8, stressAbility: 8, connections: 10 } },
+                { text: '听听就好，不以为然', message: '你心想："这不是投机取巧吗？"', mood: 'neutral', reflection: '前人的经验值得借鉴', effect: { commAbility: -3, stressAbility: -5 } },
+                { text: '敷衍应付，觉得她老油条', message: '李姐叹了口气，以后也不跟你多说了。', mood: 'negative', reflection: '尊重老同志就是尊重经验', effect: { commAbility: -8, connections: -8 } }
+              ]
+            },
+            { id: 'view_from_different_angles', category: '文化深度', title: '👥 多角度看问题', type: 'multi-angle',
+              description: '李姐和王主任因为一件工作产生了分歧。你夹在中间，左右为难。',
+              difficulty: 'important', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '站在李姐角度想想', message: '你想明白了，李姐是从实际工作角度考虑的。', mood: 'positive', reflection: '换位思考能化解矛盾', effect: { commAbility: 10, connections: 8 } },
+                { text: '理解王主任的难处', message: '你理解了，王主任有他的压力和考量。', mood: 'positive', reflection: '领导也有领导的难处', effect: { commAbility: 10, connections: 8 } },
+                { text: '谁说得对我支持谁', message: '你觉得这样比较公平，但两人都对你有意见了。', mood: 'negative', reflection: '有时候不表态也是一种态度', effect: { commAbility: -10, connections: -10 } }
+              ]
+            },
+            { id: 'work_life_balance', category: '文化深度', title: '⚖️ 工作与生活', type: 'reflection',
+              description: '周末，单位有急事需要你去加班。但你答应孩子今天去游乐园。',
+              difficulty: 'normal', timeCost: 2, sender: 'director',
+              options: [
+                { text: '跟领导说明情况，争取明天再去', message: '王主任理解："家庭也很重要，明天来吧。"', mood: 'positive', reflection: '平衡工作与生活是智慧', effect: { stressAbility: 10, health: 5, reputation: 3 } },
+                { text: '去加班，向家人解释', message: '家人理解但孩子有点失望。你觉得工作就是这样的。', mood: 'neutral', reflection: '选择了体制就是选择了奉献', effect: { reputation: 5, health: -5, stressAbility: -8 } },
+                { text: '不管了，去游乐园', message: '工作出了问题，王主任大怒："你怎么分不清轻重！"', mood: 'negative', reflection: '关键时刻要能顶上去', effect: { reputation: -15, connections: -8 } }
+              ]
+            },
+            { id: 'patient_learning', category: '文化深度', title: '📚 慢就是快', type: 'reflection',
+              description: '新来的大学生小张做事很慢，一个简单的通知他要改好几遍。李姐笑他笨。',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '安慰小张，让他别急', message: '小张很感激："谢谢前辈理解！"', mood: 'positive', reflection: '新人需要包容和引导', effect: { commAbility: 8, connections: 10 } },
+                { text: '教他提高效率的方法', message: '小张学会了，你也有成就感。', mood: 'positive', reflection: '帮助别人也是提升自己', effect: { workAbility: 5, commAbility: 8 } },
+                { text: '觉得他确实太慢了', message: '你发现自己的耐心也不够...', mood: 'negative', reflection: '每个人都有自己的节奏', effect: { commAbility: -5 } }
+              ]
+            },
+            { id: 'thicker_skin', category: '文化深度', title: '🛡️ 钝感力', type: 'dilemma',
+              description: '领导在会上点名批评了你的材料写得不好，虽然没点名，但大家都在看你。',
+              difficulty: 'normal', timeCost: 1, sender: 'boss',
+              options: [
+                { text: '虚心接受，会后找领导请教', message: '领导觉得你态度好，愿意指导你。', mood: 'positive', reflection: '被批评是成长的机会', effect: { workAbility: 12, stressAbility: 8, reputation: 5 } },
+                { text: '脸皮厚点，当作没听见', message: '你觉得没什么大不了，继续正常工作。', mood: 'neutral', reflection: '钝感力是一种能力', effect: { stressAbility: 10, reputation: 2 } },
+                { text: '心里很难受，觉得领导故意针对你', message: '这种心态影响了你后续的工作状态...', mood: 'negative', reflection: '玻璃心在职场上走不远', effect: { stressAbility: -12, reputation: -5 } }
+              ]
+            },
+            { id: 'humble_wisdom', category: '文化深度', title: '🙏 谦逊之道', type: 'reflection',
+              description: '你因为表现出色被表彰了，大家都在祝贺你。但李姐私下提醒你："年轻人，低调点。"',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '感谢李姐提醒，以后注意', message: '李姐欣赏你的谦逊："孺子可教。"', mood: 'positive', reflection: '枪打出头鸟，木秀于林风必摧之', effect: { commAbility: 10, connections: 12 } },
+                { text: '嘴上说好，心里不以为然', message: '后来因为太张扬，惹了一些人不高兴。', mood: 'negative', reflection: '忠言逆耳利于行', effect: { connections: -10, reputation: -8 } }
+              ]
+            },
+            { id: 'long_term_vision', category: '文化深度', title: '🔭 长远眼光', type: 'progressive',
+              description: '年底考核，你和另一个同事业绩差不多，但晋升名额只有一个。你会怎么做？',
+              difficulty: 'important', timeCost: 1, sender: 'director',
+              options: [
+                { text: '主动谦让，说同事做得更好', message: '领导觉得你识大体，有格局。第二年晋升的就是你。', mood: 'positive', reflection: '吃小亏占大便宜', effect: { reputation: 15, connections: 12, exp: 20 } },
+                { text: '正常竞争，展示自己的成绩', message: '虽然这次没上，但你的能力被看到了。', mood: 'neutral', reflection: '是金子总会发光', effect: { reputation: 5, connections: 3 } },
+                { text: '找关系打招呼', message: '虽然成功了，但别人背后议论纷纷。', mood: 'negative', reflection: '靠实力才能长久', effect: { reputation: -10, connections: -8 } }
+              ]
+            },
+            { id: 'keeping_original_intention', category: '文化深度', title: '💎 守住本心', type: 'reflection',
+              description: '工作了几年，你发现身边的人都在"变油"，你也有点动摇。',
+              difficulty: 'normal', timeCost: 1, sender: 'self',
+              options: [
+                { text: '保持初心，继续认真工作', message: '你相信正道沧桑，干净做事才能睡得安稳。', mood: 'positive', reflection: '不忘初心，方得始终', effect: { principlesStuck: 2, reputation: 8 } },
+                { text: '适度调整，适应环境', message: '你觉得这是生存智慧，中庸之道。', mood: 'neutral', reflection: '灵活与原则需要平衡', effect: { stressAbility: 5 } },
+                { text: '随波逐流，变成老油条', message: '你发现自己越来越圆滑，但也越来越空虚...', mood: 'negative', reflection: '人生短暂，要活得坦荡', effect: { principlesStuck: -1, stressAbility: -10 } }
+              ]
+            },
+            { id: 'secret_workethic', category: '文化深度', title: '🔏 隐性规则', type: 'multi-angle',
+              description: '你发现办公室有一些不成文的"规矩"：重要的事不能发邮件只能说、加班要让领导看到、多做多错...',
+              difficulty: 'normal', timeCost: 1, sender: 'colleague',
+              options: [
+                { text: '尊重这些规则，适应环境', message: '你发现适应得越好，路就越顺。', mood: 'neutral', reflection: '存在即合理，有些规则有其道理', effect: { stressAbility: 5, connections: 8 } },
+                { text: '坚持自己的方式，不随波逐流', message: '虽然辛苦，但你活得更自在。', mood: 'neutral', reflection: '坚持原则需要勇气', effect: { principlesStuck: 1, stressAbility: -5 } },
+                { text: '学习利用这些规则', message: '你变得"聪明"了，但偶尔也会心虚。', mood: 'negative', reflection: '小聪明不是大智慧', effect: { stressAbility: 3, principlesStuck: -1 } }
+              ]
+            }
+        ];
+
+        // ========== 晋升考核节点制 ==========
+        const PROMOTION_EXAMS = [
+            { // 科员 → 副主任科员
+                position: 0, nextTitle: '副主任科员',
+                title: '🏆 晋升考核：副主任科员',
+                description: '组织部门通知你参加副主任科员晋升考核。这是你体制内生涯的第一个关键节点。王主任找你谈话："小张，好好准备，这次考核很重要。"',
+                expNeeded: 100, totalAbilityNeeded: 200, directorOpinionNeeded: 60,
+                options: [
+                    { text: '💼 实干路线：以优异的工作业绩争取晋升', requirement: { workAbility: 65, execAbility: 55 }, expCost: 100, successMsg: '你的工作业绩有目共睹！党组一致同意你晋升为副主任科员。' },
+                    { text: '🤝 综合路线：全面展示你的综合素质', requirement: { totalAbility: 260, directorOpinion: 65 }, expCost: 110, successMsg: '你的综合素质得到了组织的高度认可，成功晋升！' },
+                    { text: '📊 经验路线：用扎实的工作经验说话', requirement: { exp: 140, workAbility: 55, commAbility: 52 }, expCost: 130, successMsg: '多年积累的工作经验开花结果，恭喜晋升！' },
+                    { text: '🎯 推荐路线：请王主任为你做推荐', requirement: { directorOpinion: 75, commAbility: 65 }, expCost: 85, successMsg: '王主任在党组会上大力推荐你，全票通过！' }
+                ]
+            },
+            { // 副主任科员 → 主任科员
+                position: 1, nextTitle: '主任科员',
+                title: '🏆 晋升考核：主任科员',
+                description: '你在副主任科员岗位上已有时日。王主任说："副主任到主任这一步，光有干劲不行，要有真本事了。"',
+                expNeeded: 250, totalAbilityNeeded: 230, directorOpinionNeeded: 60,
+                options: [
+                    { text: '💼 实干路线：凭扎实业务能力晋升', requirement: { workAbility: 72, execAbility: 65 }, expCost: 220, successMsg: '你的业务能力已经得到大家公认，晋升主任科员实至名归！' },
+                    { text: '🤝 综合路线：全面展示成长与进步', requirement: { totalAbility: 300, directorOpinion: 65 }, expCost: 240, successMsg: '你的全面成长让组织看到了你的潜力！' },
+                    { text: '📊 经验路线：用丰富的基层经验说话', requirement: { exp: 300, workAbility: 62, commAbility: 60 }, expCost: 280, successMsg: '丰富的经验积累让你在考核中脱颖而出！' },
+                    { text: '🎯 推荐路线：让多位领导为你背书', requirement: { directorOpinion: 78, commAbility: 70 }, expCost: 200, successMsg: '多方的认可让你顺利通过了晋升考核！' }
+                ]
+            },
+            { // 主任科员 → 副科长
+                position: 2, nextTitle: '副科长',
+                title: '🏆 晋升考核：副科长',
+                description: '从主任科员到副科长，这是从"兵"到"将"的跨越。李局长也关注了这次考核："副科长要能独当一面了。"',
+                expNeeded: 500, totalAbilityNeeded: 260, directorOpinionNeeded: 65,
+                options: [
+                    { text: '💼 实干路线：用出色的业绩证明领导力', requirement: { workAbility: 78, execAbility: 72 }, expCost: 450, successMsg: '你的业务能力和执行力得到了党组高度认可！' },
+                    { text: '🤝 综合路线：展示管人理事的综合能力', requirement: { totalAbility: 340, directorOpinion: 70 }, expCost: 480, successMsg: '你已具备管理者的素质，成功晋升副科长！' },
+                    { text: '📊 经验路线：用丰富的资历换取认可', requirement: { exp: 620, workAbility: 68, commAbility: 65 }, expCost: 550, successMsg: '资深经验的积累让你顺理成章地走上下一步！' },
+                    { text: '🎯 人脉路线：让关键人物为你发声', requirement: { directorOpinion: 80, commAbility: 75 }, expCost: 400, successMsg: '人脉的积累在关键时刻发挥了决定性作用！' }
+                ]
+            },
+            { // 副科长 → 科长
+                position: 3, nextTitle: '科长',
+                title: '🏆 晋升考核：科长',
+                description: '科长是一个科室的"一把手"，责任重大。组织部的考察组专门来了人。王主任提醒："这次考核会很严格。"',
+                expNeeded: 1000, totalAbilityNeeded: 290, directorOpinionNeeded: 68,
+                options: [
+                    { text: '💼 实干路线：用科室业绩证明自己', requirement: { workAbility: 82, execAbility: 78 }, expCost: 900, successMsg: '你带领科室取得的成绩有目共睹，科长之位非你莫属！' },
+                    { text: '🤝 综合路线：展示统筹协调能力', requirement: { totalAbility: 380, directorOpinion: 72 }, expCost: 950, successMsg: '你的统筹能力让考察组印象深刻！' },
+                    { text: '📊 资历路线：以深厚的积累赢得信任', requirement: { exp: 1300, workAbility: 72, commAbility: 70 }, expCost: 1100, successMsg: '资历与能力的双重积淀让你顺利通过考核！' },
+                    { text: '🎯 上层路线：争取更高层领导支持', requirement: { directorOpinion: 82, commAbility: 78 }, expCost: 850, successMsg: '高层的支持让你在考核中占据了明显优势！' }
+                ]
+            },
+            { // 科长 → 副处长
+                position: 4, nextTitle: '副处长',
+                title: '🏆 晋升考核：副处长',
+                description: '副处长是进入处级干部序列的第一步。竞争非常激烈，好几个科长都在盯着这个位置。',
+                expNeeded: 2000, totalAbilityNeeded: 320, directorOpinionNeeded: 70,
+                options: [
+                    { text: '💼 实干路线：用突出政绩脱颖而出', requirement: { workAbility: 85, execAbility: 82 }, expCost: 1800, successMsg: '你在众多竞争者中凭借过硬业绩脱颖而出！' },
+                    { text: '🤝 综合路线：展现处级干部应有格局', requirement: { totalAbility: 420, directorOpinion: 75 }, expCost: 1900, successMsg: '你的格局和能力已经达到了处级干部的标准！' },
+                    { text: '📊 资历路线：用岁月的沉淀赢得尊重', requirement: { exp: 2500, workAbility: 76, commAbility: 74 }, expCost: 2200, successMsg: '岁月沉淀的经验让你在竞争中从容胜出！' },
+                    { text: '🎯 政治路线：在关键事件中表现突出', requirement: { directorOpinion: 85, commAbility: 82 }, expCost: 1700, successMsg: '你在关键时刻的表现给领导留下了深刻印象！' }
+                ]
+            },
+            { // 副处长 → 处长
+                position: 5, nextTitle: '处长',
+                title: '🏆 晋升考核：处长',
+                description: '处长是一个处室的"掌门人"，需要全面的能力和过硬的素质。组织部门对处长人选的考察格外审慎。',
+                expNeeded: 4000, totalAbilityNeeded: 350, directorOpinionNeeded: 72,
+                options: [
+                    { text: '💼 实干路线：用卓越的领导业绩说话', requirement: { workAbility: 88, execAbility: 85 }, expCost: 3600, successMsg: '你的领导力和执行力已经达到了处长级别！' },
+                    { text: '🤝 综合路线：展现全面的治理能力', requirement: { totalAbility: 460, directorOpinion: 78 }, expCost: 3800, successMsg: '你的综合能力让组织对你充满信心！' },
+                    { text: '📊 资历路线：用深厚的功底赢得信服', requirement: { exp: 5000, workAbility: 80, commAbility: 78 }, expCost: 4400, successMsg: '深厚的资历积淀让你无可争议地晋升！' },
+                    { text: '🎯 上层路线：让关键领导为你撑腰', requirement: { directorOpinion: 88, commAbility: 85 }, expCost: 3400, successMsg: '关键领导的大力支持让你成功跨越！' }
+                ]
+            },
+            { // 处长 → 副局长
+                position: 6, nextTitle: '副局长',
+                title: '🏆 晋升考核：副局长',
+                description: '副局长是局级领导岗位，这一步跨越意味着你正式进入了"领导层"。市委组织部的考察异常严格。',
+                expNeeded: 8000, totalAbilityNeeded: 380, directorOpinionNeeded: 75,
+                options: [
+                    { text: '💼 实干路线：用显著的政绩赢得认可', requirement: { workAbility: 90, execAbility: 88 }, expCost: 7000, successMsg: '你的政绩在全市都有影响力，副局长之位实至名归！' },
+                    { text: '🤝 综合路线：展示大局观和领导力', requirement: { totalAbility: 500, directorOpinion: 80 }, expCost: 7500, successMsg: '你的大局观和领导力让市委对你寄予厚望！' },
+                    { text: '📊 资历路线：用数十年积累换取信任', requirement: { exp: 10000, workAbility: 82, commAbility: 80 }, expCost: 8500, successMsg: '数十年的辛勤耕耘终于收获了最丰硕的果实！' },
+                    { text: '🎯 上层路线：争取市委主要领导支持', requirement: { directorOpinion: 90, commAbility: 88 }, expCost: 6500, successMsg: '市委主要领导对你的能力给予了高度评价！' }
+                ]
+            },
+            { // 副局长 → 局长
+                position: 7, nextTitle: '局长',
+                title: '🏆 最终晋升：局长',
+                description: '这是体制内奋斗的终极目标。局长是一个局的"最高长官"，需要经过市委常委会的审议。你已经走到了最后的关口。',
+                expNeeded: 15000, totalAbilityNeeded: 420, directorOpinionNeeded: 80,
+                options: [
+                    { text: '💼 实干路线：用卓越的治理成效赢得全票', requirement: { workAbility: 92, execAbility: 90 }, expCost: 13000, successMsg: '你的治理成效获得了市委常委会的一致认可！恭喜，局长！' },
+                    { text: '🤝 综合路线：展现成熟稳重的领导风范', requirement: { totalAbility: 540, directorOpinion: 85 }, expCost: 14000, successMsg: '你的领导风范和成熟气质征服了所有评委！' },
+                    { text: '📊 资历路线：用一辈子的奋斗书写传奇', requirement: { exp: 18000, workAbility: 85, commAbility: 82 }, expCost: 16000, successMsg: '一辈子的奋斗终于登顶，你是体制内的传奇！' },
+                    { text: '🎯 政治路线：获得最高层的认可', requirement: { directorOpinion: 92, commAbility: 90 }, expCost: 12000, successMsg: '最高层的认可让你成功登上了局长之位！' }
+                ]
+            }
+        ];
+
+        const ACHIEVEMENTS = [
+            { id: 'newbie', name: '新人报到', desc: '完成第1天', icon: '🎓' },
+            { id: 'famous', name: '小有名气', desc: '声望达到60', icon: '⭐' },
+            { id: 'social', name: '八面玲珑', desc: '人脉达到80', icon: '🤝' },
+            { id: 'workaholic', name: '工作狂', desc: '完成50个任务', icon: '⚡' },
+            { id: 'fishking', name: '摸鱼达人', desc: '摸鱼10次', icon: '🐟' },
+            { id: 'pure', name: '清流', desc: '坚持原则20次', icon: '🌸' },
+            { id: 'promoted', name: '步步高升', desc: '晋升到科长', icon: '🎯' },
+            { id: 'ironman', name: '铁人', desc: '健康保持100达30天', icon: '💪' }
+        ];
+
+        const ENDINGS = [
+            { id: 'skyrocket', name: '青云直上', desc: '仕途光明，前途无量', hidden: false, icon: '🌟' },
+            { id: 'marginal', name: '边缘人物', desc: '被调离核心岗位', hidden: false, icon: '📦' },
+            { id: 'overwork', name: '过劳牺牲', desc: '在办公室倒下', hidden: false, icon: '💔' },
+            { id: 'slick', name: '人精老油条', desc: '活得最滋润', hidden: false, icon: '🎭' },
+            { id: 'lonely', name: '清流孤独', desc: '被调离但保持清白', hidden: false, icon: '🏔️' },
+            { id: 'fired', name: '意外落马', desc: '受处分结束', hidden: false, icon: '📉' },
+            { id: 'retire', name: '功成身退', desc: '正常退休', hidden: false, icon: '🌅' },
+            { id: 'fishking_ending', name: '摸鱼之王', desc: '连续摸鱼15天', hidden: true, icon: '🐠' },
+            { id: 'alone', name: '孤独终老', desc: '人脉为0持续30天', hidden: true, icon: '🏚️' }
+        ];
+
+        let dragState = { isDragging: false, windowId: null, startX: 0, startY: 0, startLeft: 0, startTop: 0 };
+
+        function startDrag(e, windowId) {
+            e.preventDefault();
+            const win = document.getElementById(windowId);
+            dragState = { isDragging: true, windowId, startX: e.clientX, startY: e.clientY, startLeft: win.offsetLeft, startTop: win.offsetTop };
+            bringToFront(windowId);
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+        function doDrag(e) {
+            if (!dragState.isDragging) return;
+            const win = document.getElementById(dragState.windowId);
+            win.style.left = (dragState.startLeft + (e.clientX - dragState.startX)) + 'px';
+            win.style.top = (dragState.startTop + (e.clientY - dragState.startY)) + 'px';
+        }
+        function stopDrag() { dragState.isDragging = false; document.removeEventListener('mousemove', doDrag); document.removeEventListener('mouseup', stopDrag); }
+
+        function selectIntro(step, value) {
+            console.log('selectIntro called:', step, value);
+            try {
+                if (step === 'way') {
+                    gameState.selectedWay = value;
+                    const bg = BACKGROUNDS[value];
+                    if (!bg) {
+                        console.error('背景未找到:', value);
+                        return;
+                    }
+                    document.getElementById('intro-text').innerHTML = `
+                        <p>你选择了 <span class="intro-highlight">${bg.name}</span> 入职。</p>
+                        <br>
+                        <p>报到那天，你拿着调令走进了市委大院。门口的老大爷看了你一眼，说了句：</p>
+                        <br>
+                        <p class="intro-highlight">"又来新人了？好好干。"</p>
+                        <br>
+                        <p>你被分配到了办公室，王主任上下打量了你一番：</p>
+                        <br>
+                        <p>"小张是吧？我是王主任。欢迎加入我们办公室。"</p>
+                        <br>
+                        <p>他顿了顿，又说：</p>
+                        <br>
+                        <p class="intro-highlight">"在机关工作，能力是一方面，更重要的是要懂得'规矩'。慢慢学吧。"</p>
+                        <br>
+                        <div class="intro-divider"></div>
+                        <p style="color:#ffd700;font-weight:bold;">🎯 选择你的天赋（随机获得1个）</p>
+                    `;
+                    
+                    const talents = [...TALENTS].sort(() => Math.random() - 0.5).slice(0, 4);
+                    let talentsHtml = '<div class="talent-grid">';
+                    talents.forEach(t => {
+                        talentsHtml += '<div class="talent-card" onclick="selectIntro(\'talent\', \'' + t.id + '\')" id="talent-' + t.id + '">' +
+                            '<span class="talent-icon">' + t.icon + '</span>' +
+                            '<div class="talent-name">' + t.name + ' <span class="talent-rarity ' + t.rarity + '">' + (t.rarity === 'legendary' ? '传说' : t.rarity === 'rare' ? '稀有' : '普通') + '</span></div>' +
+                            '<div class="talent-desc">' + t.desc + '</div>' +
+                            '</div>';
+                    });
+                    talentsHtml += '</div>';
+                    talentsHtml += '<button class="intro-btn" onclick="confirmIntro()" id="confirm-btn" disabled>确认开始游戏</button>';
+                    document.getElementById('intro-choices').innerHTML = talentsHtml;
+                } else if (step === 'talent') {
+                    gameState.selectedTalent = value;
+                    document.querySelectorAll('.talent-card').forEach(c => c.classList.remove('selected'));
+                    const talentEl = document.getElementById('talent-' + value);
+                    if (talentEl) {
+                        talentEl.classList.add('selected');
+                        document.getElementById('confirm-btn').disabled = false;
+                    }
+                }
+            } catch (e) {
+                console.error('selectIntro错误:', e);
+                alert('发生错误: ' + e.message);
+            }
+        }
+
+        function confirmIntro() {
+            console.log('confirmIntro called');
+            try {
+                if (gameState.selectedTalent) {
+                    const bg = BACKGROUNDS[gameState.selectedWay];
+                    const talent = TALENTS.find(t => t.id === gameState.selectedTalent);
+                    
+                    console.log('选中的背景:', bg);
+                    console.log('选中的天赋:', talent);
+                    
+                    // Apply background effects
+                    if (bg && bg.effect) {
+                        Object.keys(bg.effect).forEach(key => {
+                            if (gameState[key] !== undefined) {
+                                gameState[key] += bg.effect[key];
+                            }
+                        });
+                    }
+                    
+                    // Apply talent effects
+                    if (talent) {
+                        gameState.talents.push(talent.id);
+                        if (talent.effect && talent.effect.bonusConnections) gameState.connections += talent.effect.bonusConnections;
+                        if (talent.effect && talent.effect.bonusReputation) gameState.reputation += talent.effect.bonusReputation;
+                    }
+                    
+                    // 标记已经完成序章
+                    gameState.hasStartedGame = true;
+                    saveGame();
+                    
+                    document.getElementById('intro-screen').style.display = 'none';
+                    document.getElementById('welcome-screen').style.display = 'flex';
+                    console.log('入职完成，进入欢迎屏幕');
+                } else {
+                    console.warn('没有选择天赋');
+                    alert('请先选择天赋！');
+                }
+            } catch (e) {
+                console.error('confirmIntro错误:', e);
+                alert('发生错误: ' + e.message);
+            }
+        }
+
+        function startGame() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('desktop').style.display = 'block';
+            initGame();
+            if (!isMobile) initDeskPet();
+        }
+
+        // 文化智慧消息库
+        const WISDOM_MESSAGES = {
+            director: {
+                positive: [
+                    '做得不错，继续保持！',
+                    '年轻人有冲劲，很好！',
+                    '这个思路很清晰，我喜欢！',
+                    '考虑得很周全，有前途！',
+                    '这就对了，工作就要有这种态度！',
+                    '不错不错，看来我没看错人。',
+                    '有想法，有担当！'
+                ],
+                neutral: [
+                    '慢慢来，不着急。',
+                    '有什么不懂的可以问我。',
+                    '机关工作要耐得住性子。',
+                    '多看多学，少说多做。',
+                    '这是正常的，继续努力。'
+                ],
+                negative: [
+                    '下次注意点，别再犯同样的错误。',
+                    '工作要细心，不能马虎。',
+                    '年轻人，稳重一点。',
+                    '这是低级错误，不应该。',
+                    '要反思一下自己的工作方法。'
+                ],
+                wisdom: [
+                    '在机关，能力是一方面，更重要的是要懂得"规矩"。',
+                    '做事要方，做人要圆。',
+                    '不请示不汇报是大忌。',
+                    '领导交办的事，要件件有着落，事事有回音。',
+                    '工作要抓重点，不能眉毛胡子一把抓。'
+                ]
+            },
+            colleague: {
+                positive: [
+                    '小张不错啊，有前途！',
+                    '年轻人脑子就是活！',
+                    '以后多交流，互相学习。',
+                    '有什么事尽管说，能帮的我一定帮。',
+                    '你这人实在，我喜欢！'
+                ],
+                neutral: [
+                    '差不多就行，别太较真。',
+                    '机关就这样，慢慢适应吧。',
+                    '能推就推，推不了再说。',
+                    '多干多错，少干少错。',
+                    '有些事不要太认真，睁一只眼闭一只眼就好。'
+                ],
+                wisdom: [
+                    '在机关干活，眼里要有活，心里要有数。',
+                    '干得好不如干得巧，二八原则要记牢。',
+                    '吃亏是福，吃小亏占大便宜。',
+                    '别太较真，难得糊涂嘛。',
+                    '跟对领导很重要，跟对人比做对事更关键。'
+                ]
+            },
+            boss: {
+                positive: [
+                    '这个年轻人不错，有潜力！',
+                    '能看出来是下了功夫的。',
+                    '思路清晰，措施有力！',
+                    '可以独当一面了。'
+                ],
+                neutral: [
+                    '还要继续锻炼。',
+                    '还需要时间成长。',
+                    '继续观察观察。'
+                ],
+                negative: [
+                    '这工作是怎么做的？！',
+                    '让我怎么交代？！',
+                    '低级错误，不可原谅！'
+                ],
+                wisdom: [
+                    '机遇只垂青有准备的头脑。',
+                    '格局决定结局，态度决定高度。',
+                    '能吃苦中苦，方为人上人。',
+                    '年轻人，不要怕吃苦，吃苦是福。'
+                ]
+            }
+        };
+        
+        function getRandomWisdomMessage(sender, mood) {
+            if (WISDOM_MESSAGES[sender] && WISDOM_MESSAGES[sender][mood]) {
+                const messages = WISDOM_MESSAGES[sender][mood];
+                return messages[Math.floor(Math.random() * messages.length)];
+            }
+            return '';
+        }
+        
+        function getRandomWisdomFromAll() {
+            const senders = Object.keys(WISDOM_MESSAGES);
+            const sender = senders[Math.floor(Math.random() * senders.length)];
+            const wisdoms = WISDOM_MESSAGES[sender].wisdom || [];
+            if (wisdoms.length > 0) {
+                return { sender, message: wisdoms[Math.floor(Math.random() * wisdoms.length)] };
+            }
+            return null;
+        }
+        
+        // ========== 任务参数化系统 v2.0 ==========
+        
+        // 参数变体库
+        const PARAM_VARIANTS = {
+            numbers: {
+                small: [3, 5, 7, 8, 10],
+                medium: [10, 12, 15, 18, 20],
+                large: [20, 25, 30, 35, 40],
+                random: () => Math.floor(Math.random() * 10) + 5
+            },
+            units: {
+                government: ['下属单位', '街道办', '区直部门', '乡镇街道', '园区管委会'],
+                business: ['相关企业', '重点项目单位', '重点企业', '规上企业', '重点纳税户'],
+                internal: ['各科室', '各处室', '各股室', '各部门', '各二级单位']
+            },
+            times: {
+                morning: ['上午', '早上', '早晨', '早8点'],
+                afternoon: ['下午', '午后', '下午2点', '下午3点'],
+                evening: ['晚上', '夜间', '今晚', '今晚7点'],
+                tomorrow: ['明天', '次日', '明日上午', '明天下午']
+            },
+            topics: {
+                meeting: ['专题会议', '工作部署会', '协调会', '推进会', '座谈会', '现场会'],
+                report: ['工作报告', '调研报告', '情况汇报', '专题报告', '工作总结'],
+                document: ['紧急通知', '重要文件', '请示报告', '情况反映', '工作简报'],
+                activity: ['调研活动', '考察活动', '检查活动', '走访活动', '慰问活动']
+            },
+            leaders: {
+                senior: ['市委领导', '市主要领导', '分管副市长', '市政协主席', '市人大主任'],
+                department: ['局领导', '厅领导', '处领导', '分管领导', '主要负责'],
+                external: ['省厅领导', '省直部门', '兄弟单位', '上级机关', '对口部门']
+            },
+            materials: {
+                speech: ['领导讲话稿', '工作报告', '专题发言', '致辞', '主持词'],
+                report: ['调研报告', '督查报告', '考核报告', '评估报告', '总结报告'],
+                notice: ['会议通知', '活动通知', '紧急通知', '情况通报', '工作要求'],
+                document: ['工作方案', '实施细则', '管理办法', '规章制度', '操作规程']
+            },
+            places: {
+                meeting: ['市政府会议室', '机关会议室', '多功能厅', '视频会议室', '小会议室'],
+                reception: ['接待室', '贵宾室', '会客室', '接待中心', '迎宾厅'],
+                office: ['办公室', '值班室', '机要室', '文印室', '资料室']
+            },
+            emotions: {
+                positive: ['满意地', '高兴地', '赞许地', '点点头', '微微一笑'],
+                negative: ['皱起眉头', '不太高兴', '脸色一沉', '严肃地说', '摇了摇头'],
+                neutral: ['平静地', '认真地看着', '若有所思', '仔细翻看', '点了点头']
+            }
+        };
+        
+        // 为任务模板自动生成参数变体
+        function generateVariants(template) {
+            if (template.params) return template; // 已有参数，使用原有的
+            
+            const variants = [];
+            const baseTemplate = { ...template };
+            
+            // 根据任务类型自动生成变体
+            const category = template.category;
+            const id = template.id;
+            
+            // 公文处理类任务
+            if (category === '公文处理') {
+                const numVariant = Math.floor(Math.random() * 10) + 5; // 5-15
+                const unitType = PARAM_VARIANTS.units.government[Math.floor(Math.random() * 5)];
+                const timeType = PARAM_VARIANTS.times[Math.floor(Math.random() * 4) > 1 ? 'tomorrow' : 'morning'][Math.floor(Math.random() * 4)];
+                const topicType = PARAM_VARIANTS.topics[Object.keys(PARAM_VARIANTS.topics)[Math.floor(Math.random() * 4)]][Math.floor(Math.random() * 5)];
+                
+                return {
+                    ...template,
+                    description: template.description,
+                    params: {
+                        num: numVariant,
+                        unit: unitType,
+                        time: timeType,
+                        topic: topicType
+                    }
+                };
+            }
+            
+            // 会议服务类任务
+            if (category === '会议服务') {
+                const leaderType = PARAM_VARIANTS.leaders.senior[Math.floor(Math.random() * 5)];
+                const placeType = PARAM_VARIANTS.places.meeting[Math.floor(Math.random() * 5)];
+                const timeType = PARAM_VARIANTS.times.morning[Math.floor(Math.random() * 4)];
+                
+                return {
+                    ...template,
+                    params: {
+                        leader: leaderType,
+                        place: placeType,
+                        time: timeType
+                    }
+                };
+            }
+            
+            // 文字综合类任务
+            if (category === '文字综合') {
+                const materialType = PARAM_VARIANTS.materials[Object.keys(PARAM_VARIANTS.materials)[Math.floor(Math.random() * 4)]][Math.floor(Math.random() * 5)];
+                const topicType = PARAM_VARIANTS.topics.report[Math.floor(Math.random() * 5)];
+                const timeRange = ['15分钟', '20分钟', '30分钟', '45分钟', '1小时'][Math.floor(Math.random() * 5)];
+                
+                return {
+                    ...template,
+                    params: {
+                        material: materialType,
+                        topic: topicType,
+                        duration: timeRange
+                    }
+                };
+            }
+            
+            // 紧急信息类任务
+            if (category === '紧急信息') {
+                const eventType = ['交通事故', '安全生产事故', '群体性事件', '自然灾害', '突发公共卫生事件'][Math.floor(Math.random() * 5)];
+                const scale = ['造成1人受伤', '3人受伤', '5人受伤', '多人受伤', '重大财产损失'][Math.floor(Math.random() * 5)];
+                const hour = ['凌晨2点', '凌晨3点', '深夜11点', '凌晨1点', '凌晨4点'][Math.floor(Math.random() * 5)];
+                
+                return {
+                    ...template,
+                    params: {
+                        event: eventType,
+                        scale: scale,
+                        time: hour
+                    }
+                };
+            }
+            
+            // 人际关系类任务
+            if (category === '人际关系' || category === '文化深度') {
+                const emotion = PARAM_VARIANTS.emotions[Object.keys(PARAM_VARIANTS.emotions)[Math.floor(Math.random() * 3)]][Math.floor(Math.random() * 5)];
+                const wisdom = ['干得好不如干得巧', '吃亏是福', '二八原则', '难得糊涂', '不忘初心'][Math.floor(Math.random() * 5)];
+                
+                return {
+                    ...template,
+                    params: {
+                        emotion: emotion,
+                        wisdom: wisdom
+                    }
+                };
+            }
+            
+            // 协调沟通类任务
+            if (category === '协调沟通') {
+                const deptCount = Math.floor(Math.random() * 3) + 2; // 2-5
+                const deptType = PARAM_VARIANTS.units.government[Math.floor(Math.random() * 5)];
+                
+                return {
+                    ...template,
+                    params: {
+                        count: deptCount,
+                        dept: deptType
+                    }
+                };
+            }
+            
+            // 默认返回原模板
+            return template;
+        }
+        
+        function applyTaskParams(template) {
+            // 先尝试生成变体
+            const variantTemplate = generateVariants(template);
+            
+            // 获取描述文本（支持 descriptionTemplate 和 description 两种 key）
+            const descTemplate = variantTemplate.descriptionTemplate || variantTemplate.description || '';
+            
+            if (!variantTemplate.params) {
+                return { ...variantTemplate, description: descTemplate };
+            }
+            
+            const p = {};
+            const params = variantTemplate.params;
+            
+            // 处理数组格式的 params（[{name, values}] → {name: random_value}）
+            if (Array.isArray(params)) {
+                params.forEach(param => {
+                    if (param.name && param.values && Array.isArray(param.values)) {
+                        p[param.name] = param.values[Math.floor(Math.random() * param.values.length)];
+                    }
+                });
+            } else {
+                // 处理对象格式的 params
+                Object.keys(params).forEach(key => {
+                    if (typeof params[key] === 'number') {
+                        // 数字：如果是范围，随机生成
+                        if (Array.isArray(PARAM_VARIANTS.numbers[params[key]])) {
+                            const arr = PARAM_VARIANTS.numbers[params[key]];
+                            p[key] = arr[Math.floor(Math.random() * arr.length)];
+                        } else {
+                            p[key] = params[key];
+                        }
+                    } else if (typeof params[key] === 'string') {
+                        // 字符串：查找对应的变体库
+                        if (PARAM_VARIANTS.numbers[params[key]]) {
+                            const arr = PARAM_VARIANTS.numbers[params[key]];
+                            p[key] = arr[Math.floor(Math.random() * arr.length)];
+                        } else if (PARAM_VARIANTS.units[params[key]]) {
+                            const arr = PARAM_VARIANTS.units[params[key]];
+                            p[key] = arr[Math.floor(Math.random() * arr.length)];
+                        } else {
+                            p[key] = params[key];
+                        }
+                    } else {
+                        p[key] = params[key];
+                    }
+                });
+            }
+            
+            // 替换描述中的占位符
+            let desc = descTemplate;
+            Object.keys(p).forEach(key => {
+                desc = desc.replace(new RegExp('\\{\\{' + key + '\\}\\}', 'g'), p[key]);
+            });
+            
+            // 替换选项中的占位符
+            let options = variantTemplate.options.map(opt => {
+                let text = opt.text;
+                Object.keys(p).forEach(key => {
+                    text = text.replace(new RegExp('\\{\\{' + key + '\\}\\}', 'g'), p[key]);
+                });
+                return { ...opt, text: text };
+            });
+            
+            // 随机打乱选项顺序，避免第一个总是最优选项
+            options = shuffleArray(options);
+            
+            return { ...variantTemplate, description: desc, options: options, _params: p };
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+
+        // ========== 叙事片段库 ==========
+        const NARRATIVE_SNIPPETS = [
+            { text: '走廊里，你偶遇了王主任。他点点头："小张，最近辛苦了。"你心里一暖。', effect: { reputation: 2, characters: { director: 2 } } },
+            { text: '茶水间里，你听到李姐在跟别人说："小张这人挺实在的。"', effect: { connections: 3 } },
+            { text: '手机震动，一条匿名短信："你的努力有人看在眼里。"', effect: { stressAbility: 3 } },
+            { text: '食堂排队，旁边科室的老王主动跟你搭话："小张啊，年轻人不错！"', effect: { connections: 2, reputation: 1 } },
+            { text: '公告栏上贴出了你参与起草的那份文件，署名处有你的名字。', effect: { workAbility: 3, reputation: 2 } },
+            { text: '加班到深夜，抬头看见窗外万家灯火，突然有点想家。', effect: { stressAbility: -2, health: -1 } },
+            { text: '妈妈打来电话："工作怎么样？别太累着自己。"你鼻子一酸。', effect: { health: 3, stressAbility: 2 } },
+            { text: '老同学群里，有人晒出了年薪百万的offer。你默默划过去，继续写材料。', effect: { stressAbility: -3 } },
+            { text: '朋友圈里，大学室友又在晒出国旅游的照片。你关掉手机，继续加班。', effect: { stressAbility: -2 } },
+            { text: '小张（下属）悄悄跟你说："前辈，你教我的方法真管用！谢谢！"', effect: { reputation: 2, characters: { subordinate: 3 } } },
+            { text: '李局长路过你工位，停了一下："小张是吧？上次那个报告写得不错。"', effect: { characters: { boss: 5 }, reputation: 3 } },
+            { text: '下班时下雨了，没带伞。王主任顺路送了你一段，路上聊了几句家常。', effect: { characters: { director: 3 }, stressAbility: 2 } },
+            { text: '打开OA系统，发现你上周提交的材料被下载了20多次。看来大家都很认可。', effect: { workAbility: 2, reputation: 2 } },
+            { text: '午休时趴在桌上睡着了，醒来发现有人给你盖了一件外套。不知道是谁。', effect: { health: 2, stressAbility: 3 } },
+            { text: '电梯里只有你和李局长。他忽然说："年轻人，好好干，有前途。"', effect: { characters: { boss: 3 }, reputation: 2, stressAbility: 2 } }
+        ];
+        let lastNarrativeDay = -1;
+
+        function tryTriggerNarrative() {
+            if (gameState.day === lastNarrativeDay) return;
+            if (Math.random() < 0.15) {
+                lastNarrativeDay = gameState.day;
+                const snippet = NARRATIVE_SNIPPETS[Math.floor(Math.random() * NARRATIVE_SNIPPETS.length)];
+                if (isMobile) {
+                    mobileShowToast(snippet.text);
+                } else {
+                    showNotification('📖 ' + snippet.text.substring(0, 40) + '...');
+                }
+                applyEffect(snippet.effect, 0);
+                addMessage('system', '📖', snippet.text, 'neutral');
+            }
+        }
+
+        // ========== 结局预警 ==========
+        let warningHistory = {};
+        function checkEndingWarnings() {
+            const day = gameState.day;
+            const warnings = [];
+            
+            // 1. 失误过多预警
+            if (gameState.mistakeCount >= 5 && gameState.mistakeCount < 8) {
+                warnings.push({
+                    type: 'mistake',
+                    level: 'warning',
+                    title: '⚠️ 工作预警',
+                    message: '近期工作出现较多失误，建议仔细检查每个细节。'
+                });
+            } else if (gameState.mistakeCount >= 8 && !warningHistory['mistake']) {
+                warningHistory['mistake'] = day;
+                warnings.push({
+                    type: 'mistake',
+                    level: 'danger',
+                    title: '🚨 紧急预警',
+                    message: '失误次数已达' + gameState.mistakeCount + '次！领导已经注意到你的工作问题。'
+                });
+            }
+            
+            // 2. 健康状况预警
+            if (gameState.health < 50 && gameState.health >= 30) {
+                warnings.push({
+                    type: 'health',
+                    level: 'warning',
+                    title: '⚠️ 健康预警',
+                    message: '健康状况不佳，要注意休息了。'
+                });
+            } else if (gameState.health < 30 && !warningHistory['health']) {
+                warningHistory['health'] = day;
+                warnings.push({
+                    type: 'health',
+                    level: 'danger',
+                    title: '🚨 健康警告',
+                    message: '健康状况堪忧！再不注意休息，可能会倒下...'
+                });
+            }
+            
+            // 3. 连续摸鱼预警
+            if (gameState.consecutiveFish >= 5 && gameState.consecutiveFish < 10) {
+                warnings.push({
+                    type: 'fish',
+                    level: 'warning',
+                    title: '⚠️ 工作态度预警',
+                    message: '最近摸鱼较多，要注意工作态度了。'
+                });
+            } else if (gameState.consecutiveFish >= 10 && !warningHistory['fish']) {
+                warningHistory['fish'] = day;
+                warnings.push({
+                    type: 'fish',
+                    level: 'danger',
+                    title: '🚨 态度警告',
+                    message: '已经连续摸鱼' + gameState.consecutiveFish + '天！领导可能已经对你有看法了。'
+                });
+            }
+            
+            // 4. 领导好感度预警
+            if (gameState.characters.director.opinion <= 40 && gameState.characters.director.opinion > 25) {
+                warnings.push({
+                    type: 'director',
+                    level: 'warning',
+                    title: '⚠️ 关系预警',
+                    message: '王主任对你的印象有所下降，要注意维护关系了。'
+                });
+            } else if (gameState.characters.director.opinion <= 25 && !warningHistory['director']) {
+                warningHistory['director'] = day;
+                warnings.push({
+                    type: 'director',
+                    level: 'danger',
+                    title: '🚨 关系警告',
+                    message: '王主任对你的忍耐快要到极限了！再不注意可能会被边缘化。'
+                });
+            }
+            
+            // 5. 人脉危机预警
+            if (gameState.connections <= 20 && gameState.connections > 10) {
+                warnings.push({
+                    type: 'connections',
+                    level: 'warning',
+                    title: '⚠️ 人脉预警',
+                    message: '人脉资源不足，建议多与同事交流互动。'
+                });
+            } else if (gameState.connections <= 10 && !warningHistory['connections']) {
+                warningHistory['connections'] = day;
+                warnings.push({
+                    type: 'connections',
+                    level: 'danger',
+                    title: '🚨 人脉危机',
+                    message: '人脉枯竭！科室里没人愿意帮你说话了...'
+                });
+            }
+            
+            // 6. 声望危机预警
+            if (gameState.reputation <= 30 && gameState.reputation > 15) {
+                warnings.push({
+                    type: 'reputation',
+                    level: 'warning',
+                    title: '⚠️ 声望预警',
+                    message: '声望较低，需要做出一些成绩来挽回形象。'
+                });
+            } else if (gameState.reputation <= 15 && !warningHistory['reputation']) {
+                warningHistory['reputation'] = day;
+                warnings.push({
+                    type: 'reputation',
+                    level: 'danger',
+                    title: '🚨 声望危机',
+                    message: '声望岌岌可危！再这样下去可能会被调离...'
+                });
+            }
+            
+            // 7. 压力过大预警
+            if (gameState.stressAbility <= 30 && !warningHistory['stress']) {
+                warningHistory['stress'] = day;
+                warnings.push({
+                    type: 'stress',
+                    level: 'danger',
+                    title: '🚨 心理预警',
+                    message: '心理压力过大，建议适当放松，调整心态。'
+                });
+            }
+            
+            // 8. 能量耗尽预警
+            if (gameState.energy <= 20 && !warningHistory['energy']) {
+                warningHistory['energy'] = day;
+                warnings.push({
+                    type: 'energy',
+                    level: 'warning',
+                    title: '⚠️ 精力预警',
+                    message: '精力严重不足，需要休息恢复。'
+                });
+            }
+            
+            // 显示预警（显示最紧急的一个）
+            if (warnings.length > 0) {
+                const sortedWarnings = warnings.sort((a, b) => {
+                    if (a.level === 'danger' && b.level !== 'danger') return -1;
+                    if (b.level === 'danger' && a.level !== 'danger') return 1;
+                    return 0;
+                });
+                
+                const warning = sortedWarnings[0];
+                showWarningPopup(warning.title, warning.message);
+                
+                // 同时在消息中添加
+                addMessage('system', warning.title.includes('预警') ? '⚠️' : '🚨', warning.message, 'negative');
+            }
+        }
+        
+        function showWarningPopup(title, text) {
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #fff3cd, #ffeeba);
+                border: 3px double #856404;
+                padding: 24px 40px;
+                font-size: 14px;
+                z-index: 100000;
+                text-align: center;
+                box-shadow: 8px 8px 16px rgba(0,0,0,0.4);
+                border-radius: 8px;
+                animation: fadeIn 0.3s ease-out;
+                max-width: 80%;
+                cursor: pointer;
+            `;
+            popup.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 12px;">${title.includes('预警') ? '⚠️' : '🚨'}</div>
+                <div style="font-weight: bold; color: #856404; margin-bottom: 8px; font-size: 16px;">${title}</div>
+                <div style="color: #664d03; line-height: 1.6;">${text}</div>
+                <div style="margin-top: 12px; font-size: 12px; color: #856404;">点击任意处关闭</div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // 5秒后自动消失
+            setTimeout(() => {
+                popup.style.transition = 'opacity 0.5s';
+                popup.style.opacity = '0';
+                setTimeout(() => {
+                    if (popup.parentNode) {
+                        popup.parentNode.removeChild(popup);
+                    }
+                }, 500);
+            }, 5000);
+            
+            // 点击也可以关闭
+            popup.addEventListener('click', () => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+            });
+        }
+
+        // ========== 季度考核 ==========
+        function checkQuarterlyAssessment() {
+            if (gameState.day % 30 === 0 && gameState.day > 0) {
+                const quarter = Math.floor((gameState.day - 1) / 30) + 1;
+                const directorOpinion = gameState.characters.director.opinion;
+                let evalText = '';
+                if (directorOpinion >= 80) evalText = '优秀，领导非常满意';
+                else if (directorOpinion >= 60) evalText = '良好，领导比较认可';
+                else if (directorOpinion >= 40) evalText = '一般，领导觉得还需努力';
+                else evalText = '较差，领导不太满意';
+
+                let promoText = '';
+                const totalAbility = gameState.workAbility + gameState.execAbility + gameState.commAbility + gameState.stressAbility;
+                if (gameState.position < 8) {
+                    const exam = PROMOTION_EXAMS[gameState.position];
+                    if (gameState.exp >= exam.expNeeded && totalAbility >= exam.totalAbilityNeeded && directorOpinion >= exam.directorOpinionNeeded) {
+                        if (gameState.promotionExamDay !== gameState.day) {
+                            gameState.promotionExam = exam;
+                            gameState.promotionExamDay = gameState.day;
+                            promoText = '\n🎯 晋升考核通知已发布！请在今天的工作任务中完成晋升考核。';
+                        } else {
+                            promoText = '\n⏳ 晋升考核等待完成中...';
+                        }
+                    }
+                }
+                if (!promoText && directorOpinion < 40) {
+                    promoText = '\n⚠️ 警告：好感度过低，有降级风险！';
+                }
+
+                const text = `📊 第${quarter}季度考核结果\n\n本季度完成任务数：${gameState.completedTasks}\n当前职位：${POSITIONS[gameState.position]}\n领导评价：${evalText}\n声望：${gameState.reputation} | 经验：${gameState.exp}${promoText}`;
+
+                if (isMobile) {
+                    mobileShowToast(text);
+                } else {
+                    setTimeout(() => {
+                        alert(text);
+                    }, 500);
+                }
+            }
+        }
+
+        // ========== Esc 关闭窗口（桌面端）==========
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // 关闭所有弹窗
+                const popups = document.querySelectorAll('[id$="-popup"], .notification-toast, #warning-popup, #success-popup');
+                popups.forEach(popup => {
+                    if (popup.classList.contains('show') || popup.style.display !== 'none') {
+                        popup.classList.remove('show');
+                        popup.style.display = 'none';
+                    }
+                });
+                
+                // 关闭最上层窗口
+                if (!isMobile) {
+                    const wins = document.querySelectorAll('.win98-window');
+                    let topWin = null, topZ = -1;
+                    wins.forEach(w => {
+                        if (w.style.display !== 'none') {
+                            const z = parseInt(w.style.zIndex) || 0;
+                            if (z > topZ) { topZ = z; topWin = w; }
+                        }
+                    });
+                    if (topWin) closeWindow(topWin.id);
+                }
+            }
+            
+            // F5 刷新游戏
+            if (e.key === 'F5') {
+                e.preventDefault();
+                if (confirm('确定要重新开始吗？当前进度将丢失。')) {
+                    location.reload();
+                }
+            }
+        });
+
+        // ========== 移动端渲染函数 ==========
+        let mobileCurrentTab = 'tasks';
+
+        function mobileSwitchTab(tab) {
+            mobileCurrentTab = tab;
+            document.querySelectorAll('.mnv').forEach(b => b.classList.remove('ac'));
+            const idx = ['tasks','chars','msgs','achs','settings'].indexOf(tab);
+            const btns = document.querySelectorAll('#mobile-nav .mnv');
+            if (idx >= 0 && idx < btns.length) btns[idx].classList.add('ac');
+            const panel = document.getElementById('mobile-panel');
+            if (tab === 'tasks') { panel.classList.remove('sh'); document.getElementById('mobile-content').style.display = 'block'; }
+            else { document.getElementById('mobile-content').style.display = 'none'; panel.classList.add('sh'); mobileRenderPanel(tab); }
+            // 摸鱼按钮始终悬浮可见
+        }
+
+        function mobileRenderPanel(tab) {
+            const panel = document.getElementById('mobile-panel');
+            let html = '';
+            if (tab === 'chars') {
+                html = '<div class="ph"><span>👥 人物关系</span><span class="pc" onclick="mobileSwitchTab(\'tasks\')">✕</span></div>';
+                const chars = gameState.characters;
+                for (const [key, ch] of Object.entries(chars)) {
+                    let opinionFill = ch.opinion > 50 ? '#32cd32' : (ch.opinion > 25 ? '#ffd700' : '#ff4444');
+                    // 转义HTML特殊字符
+                    const safeName = (ch.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeRole = (ch.role || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    html += `<div class="mcc"><div class="ca">${ch.emoji || '👤'}</div><div class="ci"><div class="cn">${safeName}</div><div class="cr">${safeRole}</div><div class="ob"><div class="of" style="width:${Math.max(0,Math.min(100,ch.opinion))}%;background:${opinionFill}"></div></div></div><span style="font-size:18px;color:#666;">${Math.round(ch.opinion)}</span></div>`;
+                }
+            } else if (tab === 'msgs') {
+                html = '<div class="ph"><span>💬 消息</span><span class="pc" onclick="mobileSwitchTab(\'tasks\')">✕</span></div>';
+                gameState.messages.forEach(msg => {
+                    let cls = 'mmi';
+                    if (msg.mood === 'positive') cls += ' mp';
+                    else if (msg.mood === 'negative') cls += ' mn';
+                    // 转义HTML特殊字符
+                    const safeText = (msg.content || msg.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeSender = (msg.sender || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeTime = (msg.time || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    html += `<div class="${cls}"><div class="mh"><span class="ms">${safeSender}</span><span class="mt">${safeTime}</span></div><div class="mc">${safeText}</div></div>`;
+                });
+                if (gameState.messages.length === 0) html += '<div style="text-align:center;color:#999;padding:40px;">暂无消息</div>';
+            } else if (tab === 'achs') {
+                html = '<div class="ph"><span>🏆 成就</span><span class="pc" onclick="mobileSwitchTab(\'tasks\')">✕</span></div>';
+                ACHIEVEMENTS.forEach(a => {
+                    const unlocked = gameState.achievements[a.id];
+                    const safeName = (a.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeDesc = (a.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    html += `<div class="mai${unlocked ? '' : ' lk'}"><div class="ai">${a.icon || '🏆'}</div><div class="an"><div class="at">${safeName}</div><div class="ad">${safeDesc}</div></div></div>`;
+                });
+            } else if (tab === 'settings') {
+                html = '<div class="ph"><span>⚙️ 设置</span><span class="pc" onclick="mobileSwitchTab(\'tasks\')">✕</span></div>';
+                html += `<div class="msi"><div style="font-weight:bold;margin-bottom:8px;">🏆 结局一览</div>${ENDINGS.map(e => '<div style="margin-bottom:4px;">' + (e.icon || '🏆') + ' ' + (e.title || '').substring(0,20) + '：' + (e.description || '').substring(0,30) + '...</div>').join('')}</div>`;
+                html += `<div class="msi"><button class="sbtn bn" onclick="if(confirm('确定要开始新游戏吗？当前进度将丢失。'))location.reload();">📄 新游戏</button></div>`;
+                html += `<div class="msi"><button class="sbtn bn" onclick="saveGame();mobileShowToast('💾 存档已保存')">💾 保存存档</button></div>`;
+                html += `<div class="msi"><button class="sbtn bn" onclick="loadGame();location.reload();">📂 读取存档</button></div>`;
+                html += `<div class="msi"><button class="sbtn bdn" onclick="if(confirm('确定要清除存档并重新开始吗？所有进度将永久丢失！')){try{localStorage.removeItem('bureaucracy_sim_v3');}catch(e){}location.reload();}">🗑️ 清除存档并重新开始</button></div>`;
+            }
+            panel.innerHTML = html;
+        }
+
+        function mobileRenderTasks() {
+            const container = document.getElementById('mobile-content');
+            let html = '';
+            const tags = { 'urgent': ['urg','紧急'], 'important': ['imp','重要'], 'normal': ['nor','普通'], 'service': ['srv','服务'], 'event': ['evt','事件'], 'hard': ['imp','困难'] };
+            gameState.tasks.forEach((task, idx) => {
+                if (task.completed) return;
+                const tag = tags[task.difficulty] || ['nor','普通'];
+                html += `<div class="mtc"><div class="th"><span class="tt">${task.title}</span><span class="ttg ${tag[0]}">${tag[1]}</span></div><div class="tm">来自：${task.sender} | 耗时：${task.timeCost}h</div><div class="td">${task.description}</div>`;
+                task.options.forEach((opt, oi) => {
+                    // 转义HTML特殊字符，防止破坏结构
+                    const safeText = opt.text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                    html += `<button class="to" onclick="mobileChooseOption(${idx},${oi})">${safeText}</button>`;
+                });
+                html += '</div>';
+            });
+            if (!html) html = '<div style="text-align:center;color:#999;padding:40px;">🎉 今天任务已完成！</div>';
+            container.innerHTML = html + '<div style="height:20px;"></div>';
+            // 摸鱼按钮始终可见，不依赖任务状态
+        }
+
+        function mobileChooseOption(taskIdx, optIdx) {
+            const task = gameState.tasks[taskIdx];
+            if (!task || task.completed) return;
+            chooseOption(task.uniqueId, optIdx);
+        }
+
+        function mobileShowToast(text) {
+            const el = document.getElementById('mobile-toast-text');
+            el.textContent = text;
+            const toast = document.getElementById('mobile-toast');
+            toast.classList.add('sh');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => toast.classList.remove('sh'), 3000);
+        }
+
+        function mobileFishDay() {
+            if (confirm('确定要摸鱼下班吗？这会降低声望和领导好感度，并增加连续摸鱼计数。')) {
+                fishDay();
+            }
+        }
+
+        function mobileUpdateStatusBar() {
+            const pos = POSITIONS[gameState.position];
+            document.getElementById('mpos').textContent = '💼 ' + pos;
+            document.getElementById('mday').textContent = '📅 第' + gameState.day + '天';
+            document.getElementById('menergy').style.width = Math.max(0, Math.min(100, gameState.energy)) + '%';
+            document.getElementById('mhealth').style.width = Math.max(0, Math.min(100, gameState.health)) + '%';
+            document.getElementById('mconnect').style.width = Math.max(0, Math.min(100, gameState.connections)) + '%';
+            document.getElementById('mrep').textContent = gameState.reputation;
+            document.getElementById('mexp').textContent = gameState.exp;
+        }
+
+        function mobileShowNotification(text) {
+            mobileShowToast(text);
+        }
+
+        function mobileShowSuccess(text) {
+            document.getElementById('mobile-success-text').textContent = text;
+            const popup = document.getElementById('mobile-success');
+            popup.classList.add('sh');
+            setTimeout(() => popup.classList.remove('sh'), 3000);
+        }
+
+        function initGame() {
+            loadGame();
+            renderCharacters();
+            generateDailyTasks();
+            updateAllUI();
+            updateStickyNote();
+            warningHistory = {};
+            lastNarrativeDay = -1;
+            if (isMobile) {
+                document.getElementById('mobile-app').style.display = 'flex';
+                mobileUpdateStatusBar();
+                mobileRenderTasks();
+            }
+            if (!isMobile) openWindow('task-window');
+            addMessage('system', '👋', '欢迎来到体制内！好好干！', 'neutral');
+            addMessage('director', '😊', '小张，欢迎加入！好好表现！', 'positive');
+            addMessage('director', '💡', '在机关工作，能力是一方面，更重要的是要懂得"规矩"。慢慢学吧。', 'neutral');
+            unlockAchievement('newbie');
+        }
+
+        function newGame() {
+            if (!confirm('确定要开始新游戏吗？当前进度将丢失。')) return;
+            location.reload();
+        }
+
+        function clearSave() {
+            if (!confirm('确定要清除存档并重新开始吗？所有进度将永久丢失！')) return;
+            try { localStorage.removeItem('bureaucracy_sim_v3'); } catch(err) {}
+            location.reload();
+        }
+
+        // 检测是否为移动端
+        let isMobile = window.innerWidth <= 768;
+
+        function generateDailyTasks() {
+            gameState.tasks = [];
+            
+            // 获取当前阶段可用类别
+            const availableCategories = TASK_UNLOCK_CONFIG.getAvailableCategories(gameState.day);
+            const currentPhase = TASK_UNLOCK_CONFIG.getCurrentPhase(gameState.day);
+            
+            // 筛选当前阶段可用的任务
+            const availableTasks = TASK_TEMPLATES.filter(task => 
+                availableCategories.includes(task.category)
+            );
+            
+            // 如果没有可用任务，回退到所有任务
+            const tasksToUse = availableTasks.length > 0 ? availableTasks : TASK_TEMPLATES;
+            
+            // 随机选择任务
+            const taskCount = Math.floor(Math.random() * 2) + 3;
+            const shuffled = [...tasksToUse].sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < Math.min(taskCount, shuffled.length); i++) {
+                const templ = shuffled[i];
+                const applied = applyTaskParams(templ);
+                
+                // 应用难度曲线
+                applied.timeCost = DIFFICULTY_CONFIG.adjustTimeCost(gameState.day, applied.timeCost);
+                
+                // 添加任务，标记来源阶段（用于UI显示）
+                gameState.tasks.push({ 
+                    ...applied, 
+                    completed: false, 
+                    uniqueId: applied.id + '_' + Date.now() + '_' + i,
+                    phase: currentPhase.name
+                });
+            }
+            
+            // 显示阶段提示（第一天或进入新阶段时）
+            if (gameState.day === 1 || (gameState.lastPhase !== currentPhase.name)) {
+                gameState.lastPhase = currentPhase.name;
+                setTimeout(() => {
+                    showNotification('📢 进入【' + currentPhase.name + '】！' + currentPhase.description);
+                }, 500);
+            }
+            
+            // 注入晋升考核任务
+            if (gameState.promotionExam && gameState.promotionExamDay === gameState.day) {
+                const exam = gameState.promotionExam;
+                gameState.tasks.unshift({
+                    title: exam.title,
+                    description: exam.description,
+                    sender: 'director',
+                    difficulty: 'important',
+                    timeCost: 2,
+                    options: exam.options.map(opt => ({
+                        text: opt.text,
+                        mood: 'positive',
+                        message: '提交了晋升考核材料...',
+                        effect: {}
+                    })),
+                    isPromotionExam: true,
+                    completed: false,
+                    uniqueId: 'promo_exam_' + Date.now()
+                });
+            }
+            
+            renderTasks();
+            if (isMobile) mobileRenderTasks();
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('task-list');
+            const pending = gameState.tasks.filter(t => !t.completed);
+            if (pending.length === 0) {
+                taskList.innerHTML = '<p style="text-align:center;color:#008000;font-weight:bold;padding:40px;">🎉 今日任务已全部完成！</p>';
+                document.getElementById('desk-pet').style.display = 'block';
+                return;
+            }
+            let html = '';
+            pending.forEach(task => {
+                const tagClass = task.difficulty === 'urgent' ? 'urgent' : task.difficulty === 'important' ? 'important' : task.difficulty === 'service' ? 'service' : 'normal';
+                const tagText = task.difficulty === 'urgent' ? '🔴 紧急' : task.difficulty === 'important' ? '🟠 重要' : task.difficulty === 'service' ? '👥 服务' : '📋 日常';
+                const senderChar = gameState.characters[task.sender];
+                html += `
+                    <div class="task-item">
+                        <div class="task-header">
+                            <span style="font-weight:bold;">${task.title}</span>
+                            <span class="task-tag ${tagClass}">${tagText}</span>
+                        </div>
+                        <div style="font-size:10px;color:#666;margin-bottom:6px;">
+                            来自: <strong>${senderChar.emoji} ${senderChar.name}</strong> | 耗时: ${task.timeCost}小时
+                        </div>
+                        <p style="font-size:11px;line-height:1.5;margin-bottom:10px;">${task.description}</p>
+                        <div class="task-options">
+                            ${task.options.map((opt, i) => {
+                                const energyCost = Math.abs((opt.effect && opt.effect.exp) ? opt.effect.exp : 15);
+                                return `
+                                <button class="task-option" onclick="chooseOption('${task.uniqueId}', ${i})">
+                                    <span>${opt.text}</span>
+                                    <span class="option-cost">精力 -${energyCost}</span>
+                                </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            taskList.innerHTML = html;
+        }
+
+        function chooseOption(uniqueId, optionIdx) {
+            const task = gameState.tasks.find(t => t.uniqueId === uniqueId);
+            if (!task || task.completed) return;
+
+            // 处理晋升考核任务
+            if (task.isPromotionExam) {
+                const handled = handlePromotionExam(task, optionIdx);
+                if (handled) {
+                    task.completed = true;
+                    gameState.completedTasks++;
+                    gameState.totalChoices++;
+                    renderTasks();
+                    if (isMobile) mobileRenderTasks();
+                    updateAllUI();
+                    if (isMobile) mobileUpdateStatusBar();
+                }
+                return;
+            }
+
+            const option = task.options[optionIdx];
+            const baseEnergy = Math.abs(option.effect.exp || 15);
+            
+            if (gameState.energy < baseEnergy) {
+                showWarning('精力不足！', '休息一下或摸鱼下班吧。');
+                return;
+            }
+            
+            if (gameState.hour + task.timeCost > 18) {
+                const overtimeHours = gameState.hour + task.timeCost - 18;
+                let overtimePenalty = overtimeHours * 5;
+                if (gameState.talents.includes('hardworker')) overtimePenalty = Math.round(overtimePenalty * 0.5);
+                if (gameState.talents.includes('ironman')) overtimePenalty = 0;
+                const penaltyMsg = overtimePenalty > 0 ? `加班 ${overtimeHours} 小时，将扣除 ${overtimePenalty} 点健康。` : '由于你的天赋，本次加班不扣除健康。';
+                if (!confirm(`现在${gameState.hour}:00，做这个任务需要${task.timeCost}小时，需要加班到${gameState.hour + task.timeCost}:00。\n\n${penaltyMsg}\n\n确定要加班吗？`)) {
+                    return;
+                }
+            }
+
+            task.completed = true;
+            gameState.totalChoices++;
+            gameState.completedTasks++;
+            if (option.effect.principlesStuck) gameState.principlesStuck++;
+            if (option.effect.mistakeCount) gameState.mistakeCount += option.effect.mistakeCount;
+
+            applyEffect(option.effect, baseEnergy);
+            gameState.hour += task.timeCost;
+            gameState.energy = Math.max(0, Math.min(100, gameState.energy - baseEnergy));
+            let overtimePenalty = 5;
+            if (gameState.talents.includes('hardworker')) overtimePenalty = Math.round(overtimePenalty * 0.5);
+            if (gameState.talents.includes('ironman')) overtimePenalty = 0;
+            if (gameState.hour > 18) gameState.health = Math.max(0, gameState.health - overtimePenalty);
+            if (option.reflection) gameState.todayReflections.push(option.reflection);
+
+            const emoji = option.mood === 'positive' ? '😊' : option.mood === 'negative' ? '😠' : '😐';
+            addMessage(task.sender, emoji, option.message, option.mood);
+
+            if (option.mood === 'positive') {
+                showSuccess('表现出色！', option.message);
+            } else if (option.mood === 'negative') {
+                showWarning('出问题了！', option.message);
+            }
+
+            showFloatingFeedback(option.mood === 'positive' ? '+XP' : option.mood === 'negative' ? '失误...' : '继续', option.mood);
+            checkAchievements();
+            checkTaskExplosion();
+            updateAllUI();
+            renderTasks();
+            if (isMobile) { mobileRenderTasks(); mobileUpdateStatusBar(); }
+            tryTriggerNarrative();
+            checkEndingWarnings();
+            checkQuarterlyAssessment();
+            if (gameState.hour >= 18) setTimeout(() => showNotification('⏰ 到下班时间了！'), 500);
+        }
+
+        function applyEffect(effect, energyCost) {
+            let multiplier = 1;
+            if (gameState.talents.includes('actor') && effect.mistakeCount) {
+                multiplier *= 0.7;
+            }
+            
+            if (effect.workAbility) gameState.workAbility = Math.max(0, Math.min(100, gameState.workAbility + effect.workAbility));
+            if (effect.execAbility) gameState.execAbility = Math.max(0, Math.min(100, gameState.execAbility + effect.execAbility));
+            if (effect.commAbility) gameState.commAbility = Math.max(0, Math.min(100, gameState.commAbility + effect.commAbility));
+            if (effect.stressAbility) gameState.stressAbility = Math.max(0, Math.min(100, gameState.stressAbility + effect.stressAbility));
+            if (effect.connections) {
+                let connChange = effect.connections;
+                if (gameState.talents.includes('oldschool')) connChange *= 0.7;
+                gameState.connections = Math.max(0, Math.min(100, gameState.connections + connChange));
+            }
+            if (effect.health) {
+                let healthChange = effect.health;
+                if (gameState.talents.includes('ironman')) healthChange = 0;
+                else if (gameState.talents.includes('hardworker')) healthChange *= 0.5;
+                gameState.health = Math.max(0, Math.min(100, gameState.health + healthChange));
+            }
+            if (effect.reputation) gameState.reputation = Math.max(0, Math.min(100, gameState.reputation + effect.reputation));
+            if (effect.exp) gameState.exp += effect.exp;
+            if (effect.mistakeCount) gameState.mistakeCount += Math.floor(effect.mistakeCount * multiplier);
+            
+            if (effect.characters) {
+                Object.keys(effect.characters).forEach(key => {
+                    if (gameState.characters[key]) {
+                        let charChange = effect.characters[key];
+                        if (gameState.talents.includes('actor') && charChange < 0) charChange *= 0.7;
+                        gameState.characters[key].opinion = Math.max(0, Math.min(100, gameState.characters[key].opinion + charChange));
+                    }
+                });
+            }
+            
+            
+            renderCharacters();
+        }
+
+        function checkPromotionRequirements(exam, chosenOption) {
+            const req = chosenOption.requirement;
+            const totalAbility = gameState.workAbility + gameState.execAbility + gameState.commAbility + gameState.stressAbility;
+            const failures = [];
+            if (req.workAbility && gameState.workAbility < req.workAbility) failures.push(`工作能力 ${req.workAbility}（当前 ${gameState.workAbility}）`);
+            if (req.execAbility && gameState.execAbility < req.execAbility) failures.push(`执行能力 ${req.execAbility}（当前 ${gameState.execAbility}）`);
+            if (req.commAbility && gameState.commAbility < req.commAbility) failures.push(`沟通能力 ${req.commAbility}（当前 ${gameState.commAbility}）`);
+            if (req.stressAbility && gameState.stressAbility < req.stressAbility) failures.push(`抗压能力 ${req.stressAbility}（当前 ${gameState.stressAbility}）`);
+            if (req.totalAbility && totalAbility < req.totalAbility) failures.push(`综合能力 ${req.totalAbility}（当前 ${totalAbility}）`);
+            if (req.directorOpinion && gameState.characters.director.opinion < req.directorOpinion) failures.push(`王主任好感度 ${req.directorOpinion}（当前 ${Math.round(gameState.characters.director.opinion)}）`);
+            if (req.exp && gameState.exp < req.exp) failures.push(`经验值 ${req.exp}（当前 ${gameState.exp}）`);
+            return failures;
+        }
+
+        function handlePromotionExam(task, optionIdx) {
+            const exam = gameState.promotionExam;
+            if (!exam) return false;
+            const chosen = exam.options[optionIdx];
+            if (!chosen) return false;
+
+            const failures = checkPromotionRequirements(exam, chosen);
+
+            if (failures.length > 0) {
+                // 晋升失败
+                gameState.promotionExam = null;
+                const failMsg = `📉 晋升考核未通过！\n\n原因：以下能力/条件不满足：\n• ${failures.join('\n• ')}\n\n继续努力，下次再战！`;
+                if (isMobile) {
+                    mobileShowToast(failMsg);
+                } else {
+                    setTimeout(() => alert(failMsg), 300);
+                }
+                addMessage('system', '📉', `晋升${exam.nextTitle}考核未通过，原因：${failures.join('、')}。继续努力！`, 'negative');
+                return true;
+            }
+
+            // 晋升成功
+            gameState.exp = Math.max(0, gameState.exp - chosen.expCost);
+            gameState.position++;
+            gameState.promotionExam = null;
+            gameState.promotionExamDay = 0;
+
+            const successMsg = `🎊 恭喜晋升成功！\n\n${chosen.successMsg}\n\n当前职位：${POSITIONS[gameState.position]}\n消耗经验：${chosen.expCost}\n剩余经验：${gameState.exp}`;
+            if (isMobile) {
+                mobileShowToast(successMsg);
+            } else {
+                setTimeout(() => alert(successMsg), 300);
+            }
+            addMessage('boss', '🎉', `恭喜！你成功晋升为${POSITIONS[gameState.position]}了！`, 'positive');
+            showNotification(`🎊 恭喜晋升: ${POSITIONS[gameState.position]}`);
+            unlockAchievement('promoted');
+            updateAllUI();
+            if (isMobile) mobileUpdateStatusBar();
+            return true;
+        }
+
+        function checkTaskExplosion() {
+            const pending = gameState.tasks.filter(t => !t.completed).length;
+            if (pending >= 5 && Math.random() < 0.3) {
+                const explosions = [
+                    { msg: '😱 领导批评了！', effect: { characters: { director: -10 }, reputation: -5 } },
+                    { msg: '😡 群众投诉！', effect: { reputation: -15, health: -5, characters: { public: -10 } } },
+                    { msg: '😅 同事议论！', effect: { characters: { colleague: -5 } } }
+                ];
+                const explosion = explosions[Math.floor(Math.random() * explosions.length)];
+                showWarning('任务堆积！', '任务堆积出问题了！');
+                applyEffect(explosion.effect, 5);
+                addMessage('system', '💥', '任务堆积导致问题！', 'negative');
+            }
+        }
+
+        function showDayTransition(callback) {
+            const overlay = document.getElementById('day-transition');
+            const daySpan = document.getElementById('transition-day');
+            const starsContainer = document.getElementById('transition-stars');
+            
+            if (!overlay || !daySpan) {
+                if (callback) callback();
+                return;
+            }
+            
+            generateStars(starsContainer);
+            
+            daySpan.textContent = gameState.day;
+            overlay.classList.remove('overlay-hidden');
+            overlay.classList.add('overlay-visible');
+            
+            // 在过渡动画期间同时执行任务刷新（立即执行，与动画并行）
+            if (callback) callback();
+            
+            // 缩短过渡动画时间为1.5秒
+            setTimeout(() => {
+                overlay.classList.remove('overlay-visible');
+                overlay.classList.add('overlay-hidden');
+                
+                setTimeout(() => {
+                    clearStars(starsContainer);
+                }, 300);
+            }, 1500);
+        }
+
+        function generateStars(container) {
+            if (!container) return;
+            clearStars(container);
+            
+            const starCount = 50;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = (Math.random() * 2) + 's';
+                star.style.opacity = Math.random() * 0.5 + 0.3;
+                container.appendChild(star);
+            }
+        }
+
+        function clearStars(container) {
+            if (!container) return;
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function fishDay() {
+            const effects = [
+                { msg: '你摸鱼了一天...', reputation: -5, exp: -10 },
+                { msg: '摸鱼被王主任撞见了！', reputation: -15, characters: { director: -15 }, workAbility: -5 },
+                { msg: '今天运气好，摸鱼没被发现。', reputation: -3 }
+            ];
+            const effect = effects[Math.floor(Math.random() * effects.length)];
+            gameState.fishCount++;
+            gameState.consecutiveFish++;
+            applyEffect(effect, 5);
+            showWarning('摸鱼', effect.msg);
+            addMessage('system', '🐟', effect.msg, 'negative');
+            unlockAchievement('fishking');
+            if (isMobile) { mobileRenderTasks(); mobileUpdateStatusBar(); }
+            
+            // 显示全屏过渡效果
+            showDayTransition(() => {
+                endDay();
+            });
+        }
+
+        function endDay() {
+            showDailyReflection();
+            gameState.day++;
+            gameState.hour = 9;
+            
+            // 精力恢复机制优化
+            let energyRecovery = 40; // 基础恢复40点
+            
+            // 完成的任务越多，恢复越少（疲劳累积）
+            const taskBonus = gameState.completedTasks > 0 ? Math.min(10, gameState.completedTasks * 2) : 5;
+            energyRecovery -= taskBonus;
+            
+            // 摸鱼了一天，恢复更多精力（休息）
+            if (gameState.fishCount > 0 && gameState.fishCount === gameState.day) {
+                energyRecovery += 20;
+            }
+            
+            // 铁人天赋：精力恢复更快
+            if (gameState.talents.includes('ironman')) {
+                energyRecovery = Math.floor(energyRecovery * 1.3);
+            }
+            
+            // 健康状态影响精力恢复
+            if (gameState.health >= 80) {
+                energyRecovery += 10; // 健康良好，恢复加速
+            } else if (gameState.health < 30) {
+                energyRecovery -= 10; // 健康不佳，恢复减慢
+            }
+            
+            // 确保最低恢复量
+            energyRecovery = Math.max(30, Math.min(60, energyRecovery));
+            
+            gameState.energy = Math.min(100, gameState.energy + energyRecovery);
+            
+            // 连续摸鱼计数重置（但如果真的摸鱼了会累加）
+            if (gameState.fishCount === gameState.day) {
+                // 今天确实摸了鱼，不重置计数
+            } else {
+                gameState.consecutiveFish = 0;
+            }
+            
+            // 健康状态追踪
+            if (gameState.health <= 0) gameState.healthLowDays++;
+            else gameState.healthLowDays = 0;
+            if (gameState.connections <= 0) gameState.zeroConnectionsDays++;
+            else gameState.zeroConnectionsDays = 0;
+            
+            // 每日首次登录提示精力恢复
+            if (gameState.day > 1) {
+                const recoveryMsg = energyRecovery >= 50 ? '精力充沛！' : energyRecovery >= 40 ? '精力恢复不错。' : '有些疲惫，注意休息。';
+                setTimeout(() => {
+                    addMessage('system', '⚡', `新的一天开始了。${recoveryMsg}今日精力+${energyRecovery}`, 'positive');
+                }, 500);
+            }
+            
+            checkEndingConditions();
+            setTimeout(() => {
+                generateDailyTasks();
+                updateAllUI();
+                updateStickyNote();
+                saveGame();
+                if (isMobile) { mobileRenderTasks(); mobileUpdateStatusBar(); }
+                tryTriggerNarrative();
+                checkEndingWarnings();
+                checkQuarterlyAssessment();
+            }, 2000);
+        }
+
+        function updateStickyNote() {
+            const note = getRandomStickyNote();
+            document.getElementById('sticky-text').textContent = note;
+        }
+
+        // 文化深度反思库
+        const DAILY_REFLECTIONS = {
+            work: [
+                '工作无小事，细节见真章',
+                '干一行爱一行，爱一行精一行',
+                '多一分准备，少一分风险',
+                '事前多思考，事中少麻烦',
+                '复杂问题简单化，简单问题精细化'
+            ],
+            interpersonal: [
+                '尊重他人，就是尊重自己',
+                '予人玫瑰，手有余香',
+                '和气生财，微笑待人',
+                '吃亏是福，大度为怀',
+                '雪中送炭胜过锦上添花'
+            ],
+            mindset: [
+                '心态决定状态，状态决定结果',
+                '忙而不乱，是一种境界',
+                '拿得起放得下，想得开看得远',
+                '知足者常乐，能忍者自安',
+                '静坐常思己过，闲谈莫论人非'
+            ],
+            growth: [
+                '吃一堑长一智，知耻而后勇',
+                '学然后知不足，教然后知困',
+                '三人行必有我师，择其善者而从之',
+                '业精于勤荒于嬉，行成于思毁于随',
+                '路漫漫其修远兮，吾将上下而求索'
+            ]
+        };
+        
+        function getDailyReflection() {
+            const categories = Object.keys(DAILY_REFLECTIONS);
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            const reflections = DAILY_REFLECTIONS[randomCategory];
+            return reflections[Math.floor(Math.random() * reflections.length)];
+        }
+        
+        function showDailyReflection() {
+            let reflectionText = '📝 今日工作总结：\n';
+            
+            // 工作表现
+            if (gameState.completedTasks > 0) {
+                reflectionText += `✅ 今日完成 ${gameState.completedTasks} 项任务\n`;
+            } else {
+                reflectionText += '✅ 今日无任务完成\n';
+            }
+            
+            // 今日感悟
+            if (gameState.todayReflections.length > 0) {
+                reflectionText += '\n💭 今日工作感悟：\n' + gameState.todayReflections.map(r => '• ' + r).join('\n');
+            }
+            
+            // 领导评价
+            const directorOpinion = gameState.characters.director.opinion;
+            if (directorOpinion >= 70) {
+                reflectionText += '\n👔 王主任评价：表现不错，继续努力！';
+            } else if (directorOpinion >= 50) {
+                reflectionText += '\n👔 王主任评价：中规中矩，还需提升。';
+            } else {
+                reflectionText += '\n👔 王主任评价：有待改进，需要反思。';
+            }
+            
+            // 文化智慧
+            reflectionText += '\n🌟 修身之道：' + getDailyReflection();
+            
+            // 自我反思
+            if (gameState.principlesStuck > 0) {
+                reflectionText += '\n💎 坚持原则，难能可贵';
+            }
+            
+            if (gameState.mistakeCount > 0) {
+                reflectionText += '\n⚠️ 有些失误，要吸取教训';
+            }
+            
+            // 使用消息系统显示，不要弹窗
+            addMessage('system', '📋', reflectionText, 'neutral');
+            
+            // 如果是移动端，使用toast显示摘要
+            if (isMobile) {
+                mobileShowToast('📋 ' + (gameState.completedTasks > 0 ? '完成' + gameState.completedTasks + '项任务' : '今日摸鱼'));
+            }
+            
+            gameState.todayReflections = [];
+        }
+
+        function addMessage(sender, emoji, content, mood) {
+            const senderChar = sender === 'system' ? { name: '系统', emoji: '💻' } : gameState.characters[sender];
+            gameState.messages.unshift({ sender: senderChar ? senderChar.name : '系统', emoji, content, mood, time: new Date().toLocaleTimeString() });
+            if (gameState.messages.length > 30) gameState.messages.pop();
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const msgList = document.getElementById('message-list');
+            if (!msgList) return;
+            if (gameState.messages.length === 0) { msgList.innerHTML = '<p style="text-align:center;color:#666;">暂无消息</p>'; return; }
+            let html = '';
+            gameState.messages.forEach(msg => {
+                const moodClass = msg.mood === 'positive' ? 'positive' : msg.mood === 'negative' ? 'negative' : 'neutral';
+                const safeContent = (msg.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeSender = (msg.sender || '系统').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeTime = (msg.time || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                html += `<div class="message-item ${moodClass}">
+                    <div class="msg-header"><span class="msg-emoji">${msg.emoji || '📩'}</span><span class="msg-sender">${safeSender}</span><span style="color:#666;font-size:10px;margin-left:auto;">${safeTime}</span></div>
+                    <div class="msg-content">${safeContent}</div>
+                </div>`;
+            });
+            msgList.innerHTML = html;
+        }
+
+        function renderCharacters() {
+            const charGrid = document.getElementById('char-grid');
+            if (!charGrid) return;
+            let html = '';
+            Object.keys(gameState.characters).forEach(key => {
+                const c = gameState.characters[key];
+                const color = c.opinion >= 70 ? '#00a800' : c.opinion >= 40 ? '#c07800' : '#c00000';
+                html += `<div class="char-card">
+                    <span class="char-avatar">${c.emoji}</span>
+                    <div class="char-name">${c.name}</div>
+                    <div class="char-role">${c.role}</div>
+                    <div class="char-opinion">好感度: ${c.opinion}<div class="opinion-bar"><div class="opinion-fill" style="width:${c.opinion}%;background:${color}"></div></div></div>
+                </div>`;
+            });
+            charGrid.innerHTML = html;
+        }
+
+        function updateAllUI() {
+            document.getElementById('gadget-energy').style.width = `${gameState.energy}%`;
+            document.getElementById('gadget-health').style.width = `${gameState.health}%`;
+            document.getElementById('gadget-connections').style.width = `${gameState.connections}%`;
+            document.getElementById('gadget-day').textContent = `${gameState.day}`;
+            document.getElementById('gadget-date').textContent = `第${gameState.day}天`;
+            document.getElementById('taskbar-clock').textContent = `${String(gameState.hour).padStart(2,'0')}:00`;
+            document.getElementById('status-position').textContent = `💼 ${POSITIONS[gameState.position]}`;
+            document.getElementById('status-day').textContent = `📅 第${gameState.day}天`;
+            document.getElementById('status-reputation').textContent = `⭐ 声望: ${gameState.reputation}`;
+            document.getElementById('status-exp').textContent = `📊 经验: ${gameState.exp}`;
+            renderAchievements();
+            renderEndings();
+            if (isMobile) mobileUpdateStatusBar();
+        }
+
+        function toggleStartMenu() { document.getElementById('start-menu').classList.toggle('show'); }
+        function openWindow(id) {
+            const win = document.getElementById(id);
+            if (!win) return;
+            win.style.display = 'block';
+            bringToFront(id);
+        }
+        function closeWindow(id) { const win = document.getElementById(id); if (win) win.style.display = 'none'; }
+        function minimizeWindow(id) { const win = document.getElementById(id); if (win) win.style.display = 'none'; }
+        function bringToFront(id) {
+            document.querySelectorAll('.win98-window .window-titlebar').forEach(t => t.classList.add('inactive'));
+            const t = document.querySelector(`#${id} .window-titlebar`);
+            if (t) t.classList.remove('inactive');
+        }
+
+        function showNotification(msg) {
+            if (isMobile) { mobileShowToast(msg); return; }
+            const el = document.getElementById('notification-toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        function showWarning(title, text) {
+            if (isMobile) { mobileShowToast('⚠️ ' + text); return; }
+            document.getElementById('warning-text').innerHTML = `<p style="margin-bottom:8px;">${text}</p>`;
+            const popup = document.getElementById('warning-popup');
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3000);
+        }
+
+        function showSuccess(title, text) {
+            if (isMobile) { mobileShowToast('✨ ' + text); return; }
+            document.getElementById('success-text').innerHTML = `<p style="margin-bottom:8px;">${text}</p>`;
+            const popup = document.getElementById('success-popup');
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3000);
+        }
+
+        function showFloatingFeedback(text, mood) {
+            if (isMobile) { mobileShowToast(text); return; }
+            const el = document.createElement('div');
+            el.className = `floating-feedback feedback-${mood}`;
+            el.textContent = text;
+            el.style.left = '50%';
+            el.style.top = '40%';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1500);
+        }
+
+        function checkAchievements() {
+            if (gameState.reputation >= 60) unlockAchievement('famous');
+            if (gameState.connections >= 80) unlockAchievement('social');
+            if (gameState.completedTasks >= 50) unlockAchievement('workaholic');
+            if (gameState.fishCount >= 10) unlockAchievement('fishking');
+            if (gameState.principlesStuck >= 20) unlockAchievement('pure');
+        }
+
+        function unlockAchievement(id) {
+            if (gameState.achievements.includes(id)) return;
+            gameState.achievements.push(id);
+            const a = ACHIEVEMENTS.find(x => x.id === id);
+            if (a) showNotification(`🏆 成就解锁: ${a.name}!`);
+        }
+
+        function renderAchievements() {
+            const grid = document.getElementById('achievement-grid');
+            if (!grid) return;
+            let html = '';
+            ACHIEVEMENTS.forEach(a => {
+                const unlocked = gameState.achievements.includes(a.id);
+                html += `<div class="achievement-item ${unlocked ? '' : 'locked'}">
+                    <span class="achievement-icon">${a.icon}</span>
+                    <div class="achievement-name">${unlocked ? a.name : '???'}</div>
+                    <div class="achievement-desc">${unlocked ? a.desc : '未解锁'}</div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function checkEndingConditions() {
+            if (gameState.position === 8) triggerEnding('skyrocket');
+            if (gameState.characters.director.opinion < 20) triggerEnding('marginal');
+            if (gameState.healthLowDays >= 7) triggerEnding('overwork');
+            if (gameState.connections >= 80 && gameState.position >= 3) triggerEnding('slick');
+            if (gameState.principlesStuck >= 30) triggerEnding('lonely');
+            if (gameState.mistakeCount >= 10) triggerEnding('fired');
+            if (gameState.day >= 1825) triggerEnding('retire');
+            if (gameState.consecutiveFish >= 15) triggerEnding('fishking_ending');
+            if (gameState.zeroConnectionsDays >= 30) triggerEnding('alone');
+        }
+
+        function triggerEnding(id) {
+            const e = ENDINGS.find(x => x.id === id);
+            if (!e) return;
+            if (!gameState.unlockedEndings.includes(id)) gameState.unlockedEndings.push(id);
+            document.getElementById('ending-icon').textContent = e.icon;
+            document.getElementById('ending-title').textContent = e.name;
+            document.getElementById('ending-desc').textContent = e.desc;
+            document.getElementById('ending-stats').innerHTML = `<div>📅 生存天数: ${gameState.day}</div><div>📊 完成任务: ${gameState.completedTasks}</div><div>💼 最终职位: ${POSITIONS[gameState.position]}</div>`;
+            document.getElementById('ending-screen').classList.add('show');
+            saveGame();
+        }
+
+        function continueGame() {
+            // 隐藏结局画面
+            document.getElementById('ending-screen').classList.remove('show');
+            // 恢复精力
+            gameState.energy = Math.max(20, gameState.energy + 60);
+            gameState.health = Math.max(10, gameState.health + 40);
+            // 清空当天任务，清空连续摸鱼计数
+            gameState.tasks = gameState.tasks.filter(t => t.completed);
+            gameState.consecutiveFish = 0;
+            gameState.hour = 9;
+            saveGame();
+        }
+
+        function restartGame() {
+            if (!confirm('确定要重新开始吗？当前进度将丢失。')) return;
+            // 重置游戏状态但保留存档槽位
+            const saveSlots = gameState.saveSlots || [];
+            gameState = {
+                hasStartedGame: false,
+                introStep: 0, selectedWay: -1, selectedTalent: null,
+                day: 1, hour: 9, position: 0, reputation: 50, exp: 0, workAbility: 50, execAbility: 50,
+                commAbility: 50, stressAbility: 50, energy: 100, connections: 50, health: 100,
+                tasks: [], completedTasks: 0, totalChoices: 0, principlesStuck: 0, fishCount: 0,
+                characters: { director: { name: '李主任', role: '主任', emoji: '😊', opinion: 50, mood: 'neutral' }, colleague: { name: '王姐', role: '同事', emoji: '👩‍💼', opinion: 50, mood: 'neutral' }, subordinate: { name: '小刘', role: '下属', emoji: '👨‍💼', opinion: 50, mood: 'neutral' } },
+                messages: [], achievements: [], unlockedEndings: [], talents: [],
+                saveSlots: saveSlots, // 保留存档槽位
+                healthLowDays: 0, mistakeCount: 0, consecutiveFish: 0, zeroConnectionsDays: 0
+            };
+            saveGame();
+            location.reload();
+        }
+
+        function renderEndings() {
+            const el = document.getElementById('ending-list');
+            if (!el) return;
+            let html = '';
+            ENDINGS.forEach(e => {
+                const unlocked = gameState.unlockedEndings.includes(e.id);
+                if (!e.hidden || unlocked) {
+                    html += `<div class="ending-item ${unlocked ? 'unlocked' : ''}" style="${unlocked ? '' : 'opacity:0.5'}">
+                        <span style="font-size:20px;margin-right:8px;">${e.icon}</span>
+                        <div><div style="font-weight:bold;font-size:11px;">${unlocked ? e.name : '???'}</div><div style="font-size:10px;color:#666;">${unlocked ? e.desc : '未解锁'}</div></div>
+                    </div>`;
+                }
+            });
+            el.innerHTML = html;
+        }
+
+        function openSaveWindow() { openWindow('save-window'); renderSaveSlots(); }
+        function renderSaveSlots() {
+            const el = document.getElementById('save-grid');
+            if (!el) return;
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                const s = gameState.saveSlots[i];
+                if (s) {
+                    html += `<div class="save-slot" onclick="loadFromSlot(${i})">
+                        <div style="font-weight:bold;">存档 ${i+1}</div>
+                        <div style="font-size:10px;">${s.date}</div>
+                        <div style="font-size:10px;">${POSITIONS[s.position]}</div>
+                    </div>`;
+                } else {
+                    html += `<div class="save-slot" onclick="saveToSlot(${i})" style="border-style:dashed;opacity:0.7">
+                        <div>📝 空存档</div><div style="font-size:10px;">点击保存</div>
+                    </div>`;
+                }
+            }
+            el.innerHTML = html;
+        }
+
+        function saveToSlot(i) {
+            gameState.saveSlots[i] = { ...JSON.parse(JSON.stringify(gameState)), date: new Date().toLocaleString() };
+            saveGame();
+            showNotification('✅ 存档成功!');
+            renderSaveSlots();
+        }
+
+        function loadFromSlot(i) {
+            if (!gameState.saveSlots[i]) return;
+            if (!confirm('读取存档覆盖当前进度，确定？')) return;
+            Object.assign(gameState, gameState.saveSlots[i]);
+            showNotification('✅ 读档成功!');
+            renderCharacters(); renderTasks(); renderMessages(); updateAllUI();
+        }
+
+        function saveGame() { try { localStorage.setItem('bureaucracy_sim_v3', JSON.stringify(gameState)); } catch(err) {} }
+        function loadGame() { try { const s = localStorage.getItem('bureaucracy_sim_v3'); if (s) Object.assign(gameState, JSON.parse(s)); } catch(err) {} }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('start-menu');
+            const btn = document.getElementById('start-button');
+            if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('show');
+        });
+        
+        // ========== 桌面小宠 ==========
+        function initDeskPet() {
+            const pet = document.getElementById('desk-pet');
+            if (!pet) return;
+            
+            let isDragging = false;
+            let startX, startY, startLeft, startTop;
+            let idleTimer;
+            let hopTimer;
+            
+            // 双击摸鱼（防止误触）
+            let lastClickTime = 0;
+            pet.addEventListener('click', (e) => {
+                if (isDragging) return;
+                const now = Date.now();
+                if (now - lastClickTime < 500) {
+                    // 双击确认
+                    if (confirm('确定要摸鱼下班吗？这会降低声望和领导好感度，并增加连续摸鱼计数。')) {
+                        fishDay();
+                    }
+                } else {
+                    // 单击提示
+                    const label = pet.querySelector('.pet-label');
+                    if (label) {
+                        label.textContent = '双击摸鱼';
+                        label.style.opacity = '1';
+                        setTimeout(() => {
+                            label.style.opacity = '';
+                        }, 2000);
+                    }
+                }
+                lastClickTime = now;
+            });
+            
+            // 拖拽
+            pet.addEventListener('mousedown', (e) => {
+                if (e.target === pet || e.target.closest('.pet-body')) {
+                    isDragging = true;
+                    const rect = pet.getBoundingClientRect();
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startLeft = rect.left;
+                    startTop = rect.top;
+                    pet.style.transition = 'none';
+                    e.preventDefault();
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                const maxX = window.innerWidth - 80;
+                const maxY = window.innerHeight - 100;
+                pet.style.left = Math.max(0, Math.min(maxX, startLeft + dx)) + 'px';
+                pet.style.top = Math.max(0, Math.min(maxY, startTop + dy)) + 'px';
+                pet.style.right = 'auto';
+                pet.style.bottom = 'auto';
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            // 桌面端默认显示
+            if (!isMobile) pet.style.display = 'block';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            // 尝试读取存档
+            loadGame();
+            
+            // 兼容旧存档：如果有游玩记录但 hasStartedGame 为 false，自动修正
+            if (!gameState.hasStartedGame && gameState.day > 1) {
+                gameState.hasStartedGame = true;
+                saveGame();
+            }
+            
+            // 如果已经完成序章，直接进入游戏
+            if (gameState.hasStartedGame) {
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('desktop').style.display = 'block';
+                // 延迟执行确保DOM已完全加载
+                setTimeout(() => {
+                    initGame();
+                    if (!isMobile) initDeskPet();
+                }, 100);
+            } else {
+                // 显示序章界面
+                document.getElementById('intro-screen').style.display = 'flex';
+                document.getElementById('desktop').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
