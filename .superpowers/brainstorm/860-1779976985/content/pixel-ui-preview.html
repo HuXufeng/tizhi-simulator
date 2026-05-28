@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体制内模拟器2.0 - 像素风原型</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #1a1c2c;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #ffcd75;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 #b13e53;
+        }
+        
+        .subtitle {
+            color: #8b8b8b;
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        /* 手机框架 */
+        .phone-frame {
+            width: 280px;
+            height: 560px;
+            background: #2a2a3a;
+            border: 4px solid #3a3a4a;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 32px;
+            background: linear-gradient(180deg, #3b5dc9, #2a4a9a);
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #1a3a7a;
+        }
+        
+        .status-left {
+            color: #fff;
+            font-size: 6px;
+        }
+        
+        .status-right {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        .mini-stat {
+            color: #ffcd75;
+            font-size: 5px;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            height: calc(100% - 32px - 60px - 70px);
+            overflow-y: auto;
+            background: #1a1c2c;
+            padding: 8px;
+        }
+        
+        /* 任务卡片 */
+        .task-card {
+            background: #2a2a4a;
+            border: 2px solid #4a4a6a;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .task-card:hover {
+            border-color: #ffcd75;
+            transform: translateX(4px);
+        }
+        
+        .task-card:active {
+            transform: scale(0.98);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .task-tag {
+            font-size: 5px;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        
+        .task-tag.urgent {
+            background: #b13e53;
+            color: #fff;
+        }
+        
+        .task-tag.normal {
+            background: #3b5dc9;
+            color: #fff;
+        }
+        
+        .task-tag.important {
+            background: #ef7d57;
+            color: #fff;
+        }
+        
+        .task-icon {
+            font-size: 16px;
+        }
+        
+        .task-title {
+            color: #f4f4f4;
+            font-size: 7px;
+            margin-bottom: 4px;
+        }
+        
+        .task-desc {
+            color: #8b8b8b;
+            font-size: 5px;
+            line-height: 1.4;
+        }
+        
+        .task-cost {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 5px;
+            color: #8b8b8b;
+        }
+        
+        .cost-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        /* 内心声音面板 */
+        .voice-panel {
+            height: 60px;
+            background: #2a2a3a;
+            border-top: 2px solid #4a4a6a;
+            padding: 6px;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+        }
+        
+        .voice-card {
+            min-width: 70px;
+            background: #1a1c2c;
+            border: 2px solid #3a3a4a;
+            border-radius: 4px;
+            padding: 4px;
+            text-align: center;
+        }
+        
+        .voice-card.ambition {
+            border-color: #b13e53;
+        }
+        
+        .voice-card.goodperson {
+            border-color: #3b5dc9;
+        }
+        
+        .voice-card.cautious {
+            border-color: #38b764;
+        }
+        
+        .voice-icon {
+            font-size: 14px;
+        }
+        
+        .voice-name {
+            font-size: 5px;
+            margin: 2px 0;
+        }
+        
+        .voice-bar {
+            height: 4px;
+            background: #3a3a4a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .voice-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .voice-fill.ambition {
+            background: #b13e53;
+        }
+        
+        .voice-fill.goodperson {
+            background: #3b5dc9;
+        }
+        
+        .voice-fill.cautious {
+            background: #38b764;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            height: 60px;
+            background: #2a2a3a;
+            border-top: 2px solid #4a4a6a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #8b8b8b;
+            cursor: pointer;
+            text-align: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            background: #3a3a4a;
+            color: #ffcd75;
+        }
+        
+        .nav-icon {
+            font-size: 16px;
+            display: block;
+        }
+        
+        .nav-label {
+            font-size: 5px;
+            margin-top: 2px;
+        }
+        
+        /* 展示布局 */
+        .showcase {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .mockup-section {
+            text-align: center;
+        }
+        
+        .mockup-label {
+            color: #ffcd75;
+            font-size: 10px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .mockup-desc {
+            color: #8b8b8b;
+            font-size: 7px;
+            max-width: 280px;
+            line-height: 1.6;
+        }
+        
+        /* 技能树预览 */
+        .skill-preview {
+            width: 280px;
+            background: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .skill-title {
+            color: #ffcd75;
+            font-size: 8px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .skill-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .skill-node {
+            width: 50px;
+            height: 50px;
+            background: #1a1c2c;
+            border: 2px solid #3a3a4a;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .skill-node:hover {
+            border-color: #ffcd75;
+            transform: scale(1.1);
+        }
+        
+        .skill-node.unlocked {
+            border-color: #38b764;
+            background: linear-gradient(135deg, #2a4a3a, #1a3a2a);
+        }
+        
+        .skill-node.locked {
+            opacity: 0.4;
+        }
+        
+        .skill-icon {
+            font-size: 16px;
+        }
+        
+        .skill-lv {
+            font-size: 5px;
+            color: #8b8b8b;
+            margin-top: 2px;
+        }
+        
+        /* 关系网络预览 */
+        .relation-preview {
+            width: 280px;
+            background: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 12px;
+            position: relative;
+            height: 300px;
+        }
+        
+        .relation-title {
+            color: #ffcd75;
+            font-size: 8px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .relation-node {
+            position: absolute;
+            text-align: center;
+        }
+        
+        .relation-avatar {
+            width: 40px;
+            height: 40px;
+            background: #1a1c2c;
+            border: 2px solid #3a3a4a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin: 0 auto 4px;
+        }
+        
+        .relation-name {
+            font-size: 5px;
+            color: #f4f4f4;
+        }
+        
+        .relation-trust {
+            font-size: 5px;
+            color: #38b764;
+            margin-top: 2px;
+        }
+        
+        /* 选项预览 */
+        .option-preview {
+            width: 280px;
+            background: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .option-title {
+            color: #ffcd75;
+            font-size: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .event-option {
+            background: #1a1c2c;
+            border: 2px solid #3a3a4a;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .event-option:hover {
+            border-color: #ffcd75;
+            transform: translateX(4px);
+        }
+        
+        .event-option.selected {
+            border-color: #38b764;
+            background: #2a3a2a;
+        }
+        
+        .option-text {
+            color: #f4f4f4;
+            font-size: 6px;
+            line-height: 1.5;
+        }
+        
+        .option-effects {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .effect-tag {
+            font-size: 5px;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        
+        .effect-tag.positive {
+            background: #38b764;
+            color: #fff;
+        }
+        
+        .effect-tag.negative {
+            background: #b13e53;
+            color: #fff;
+        }
+        
+        /* 像素装饰 */
+        .pixel-border {
+            position: relative;
+        }
+        
+        .pixel-border::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: repeating-linear-gradient(
+                0deg,
+                #ffcd75 0px,
+                #ffcd75 4px,
+                transparent 4px,
+                transparent 8px
+            );
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* 按钮 */
+        .prototype-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #38b764, #2a9a4a);
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 0 #1a7a3a;
+            transition: all 0.1s;
+        }
+        
+        .prototype-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #1a7a3a;
+        }
+        
+        .prototype-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1a7a3a;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .phone-frame {
+                width: 100%;
+                max-width: 320px;
+                height: auto;
+                aspect-ratio: 9/16;
+            }
+            
+            .showcase {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            h1 {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ 体制内模拟器 2.0</h1>
+        <p class="subtitle">像素风 · 策略养成 · 移动端优先</p>
+        
+        <div class="showcase">
+            <!-- 移动端主界面 -->
+            <div class="mockup-section">
+                <div class="phone-frame pixel-border">
+                    <div class="status-bar">
+                        <div class="status-left">
+                            <div>第 <span style="color:#ffcd75">15</span> 天</div>
+                            <div style="font-size:5px;color:#c0c0c0">09:30</div>
+                        </div>
+                        <div class="status-right">
+                            <span class="mini-stat">⚡75</span>
+                            <span class="mini-stat">❤️85</span>
+                            <span class="mini-stat">🎭62</span>
+                        </div>
+                    </div>
+                    
+                    <div class="main-content">
+                        <div class="task-card">
+                            <div class="task-header">
+                                <span class="task-tag important">重要</span>
+                                <span class="task-icon">📋</span>
+                            </div>
+                            <div class="task-title">会议座次安排</div>
+                            <div class="task-desc">明天全市大会需要摆放桌牌，名单很长很复杂...</div>
+                            <div class="task-cost">
+                                <span class="cost-item">⚡ -15</span>
+                                <span class="cost-item">⏱️ 2小时</span>
+                                <span class="cost-item">📈 +25EXP</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-card">
+                            <div class="task-header">
+                                <span class="task-tag urgent">紧急</span>
+                                <span class="task-icon">⚡</span>
+                            </div>
+                            <div class="task-title">突发事件上报</div>
+                            <div class="task-desc">辖区发生交通事故，3人受伤，现在是凌晨2点...</div>
+                            <div class="task-cost">
+                                <span class="cost-item">⚡ -20</span>
+                                <span class="cost-item">❤️ -10</span>
+                                <span class="cost-item">📈 +40EXP</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-card">
+                            <div class="task-header">
+                                <span class="task-tag normal">日常</span>
+                                <span class="task-icon">📤</span>
+                            </div>
+                            <div class="task-title">文件发送确认</div>
+                            <div class="task-desc">重要文件发送给10个部门，有2个接收失败...</div>
+                            <div class="task-cost">
+                                <span class="cost-item">⚡ -5</span>
+                                <span class="cost-item">⏱️ 1小时</span>
+                                <span class="cost-item">📈 +15EXP</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="voice-panel">
+                        <div class="voice-card ambition">
+                            <div class="voice-icon">🎯</div>
+                            <div class="voice-name" style="color:#b13e53">野心家</div>
+                            <div class="voice-bar">
+                                <div class="voice-fill ambition" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="voice-card goodperson">
+                            <div class="voice-icon">😇</div>
+                            <div class="voice-name" style="color:#3b5dc9">老好人</div>
+                            <div class="voice-bar">
+                                <div class="voice-fill goodperson" style="width: 42%"></div>
+                            </div>
+                        </div>
+                        <div class="voice-card cautious">
+                            <div class="voice-icon">🛡️</div>
+                            <div class="voice-name" style="color:#38b764">谨慎派</div>
+                            <div class="voice-bar">
+                                <div class="voice-fill cautious" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bottom-nav">
+                        <button class="nav-btn active">
+                            <span class="nav-icon">📋</span>
+                            <span class="nav-label">任务</span>
+                        </button>
+                        <button class="nav-btn">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-label">人物</span>
+                        </button>
+                        <button class="nav-btn">
+                            <span class="nav-icon">💬</span>
+                            <span class="nav-label">消息</span>
+                        </button>
+                        <button class="nav-btn">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-label">属性</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mockup-label">📱 移动端主界面</div>
+                <div class="mockup-desc">
+                    竖屏设计，单手可操作。顶部显示天数和时间，下方任务卡片支持滑动切换，底部快捷导航。
+                </div>
+            </div>
+            
+            <!-- 技能树界面 -->
+            <div class="mockup-section">
+                <div class="skill-preview">
+                    <div class="skill-title">🌲 技能树</div>
+                    
+                    <div class="skill-row">
+                        <div class="skill-node unlocked" title="业务能力 Lv.2">
+                            <span class="skill-icon">💼</span>
+                            <span class="skill-lv">Lv.2</span>
+                        </div>
+                        <div class="skill-node unlocked" title="人际社交 Lv.1">
+                            <span class="skill-icon">🤝</span>
+                            <span class="skill-lv">Lv.1</span>
+                        </div>
+                        <div class="skill-node" title="心理素质 Lv.1">
+                            <span class="skill-icon">🛡️</span>
+                            <span class="skill-lv">Lv.1</span>
+                        </div>
+                        <div class="skill-node" title="政治智慧 Lv.1">
+                            <span class="skill-icon">🎭</span>
+                            <span class="skill-lv">Lv.1</span>
+                        </div>
+                        <div class="skill-node" title="个人魅力 Lv.1">
+                            <span class="skill-icon">✨</span>
+                            <span class="skill-lv">Lv.1</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; border-top: 1px dashed #4a4a6a; padding-top: 10px;">
+                        <div style="color:#8b8b8b;font-size:6px;margin-bottom:6px;">💼 业务能力 Lv.2</div>
+                        <div style="display:flex;gap:6px;justify-content:center;">
+                            <div class="skill-node unlocked" style="width:40px;height:40px;" title="公文写作">
+                                <span class="skill-icon" style="font-size:12px;">📝</span>
+                            </div>
+                            <div class="skill-node unlocked" style="width:40px;height:40px;" title="沟通协调">
+                                <span class="skill-icon" style="font-size:12px;">📞</span>
+                            </div>
+                            <div class="skill-node" style="width:40px;height:40px;" title="应急处理">
+                                <span class="skill-icon" style="font-size:12px;">⚡</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mockup-label">🎯 技能树界面</div>
+                <div class="mockup-desc">
+                    五大技能树，每树4级。技能解锁影响事件选项，高级技能可触发特殊剧情。
+                </div>
+            </div>
+            
+            <!-- 关系网络 -->
+            <div class="mockup-section">
+                <div class="relation-preview">
+                    <div class="relation-title">🕸️ 人际关系网络</div>
+                    
+                    <div class="relation-node" style="top:50px;left:110px;">
+                        <div class="relation-avatar" style="border-color:#b13e53;">👴</div>
+                        <div class="relation-name">李局长</div>
+                        <div class="relation-trust">信任 72</div>
+                    </div>
+                    
+                    <div class="relation-node" style="top:120px;left:40px;">
+                        <div class="relation-avatar" style="border-color:#3b5dc9;">👨‍💼</div>
+                        <div class="relation-name">王主任</div>
+                        <div class="relation-trust">信任 85</div>
+                    </div>
+                    
+                    <div class="relation-node" style="top:120px;left:180px;">
+                        <div class="relation-avatar" style="border-color:#38b764;">👩</div>
+                        <div class="relation-name">李姐</div>
+                        <div class="relation-trust">信任 78</div>
+                    </div>
+                    
+                    <div class="relation-node" style="top:200px;left:110px;">
+                        <div class="relation-avatar" style="border-color:#ffcd75;">🧑</div>
+                        <div class="relation-name">小张</div>
+                        <div class="relation-trust">信任 65</div>
+                    </div>
+                    
+                    <div class="relation-node" style="top:270px;left:110px;">
+                        <div class="relation-avatar" style="border-color:#8b8b8b;">🧑‍💼</div>
+                        <div class="relation-name">张科长</div>
+                        <div class="relation-trust">信任 45</div>
+                    </div>
+                </div>
+                <div class="mockup-label">🤝 人际关系网络</div>
+                <div class="mockup-desc">
+                    多维度关系（信任/好感/竞争）。点击角色查看详情和互动历史。
+                </div>
+            </div>
+            
+            <!-- 事件选项 -->
+            <div class="mockup-section">
+                <div class="option-preview">
+                    <div class="option-title">⚡ 突发事件上报 - 请选择</div>
+                    
+                    <div class="event-option">
+                        <div class="option-text">📞 立即上报，先口头再书面</div>
+                        <div class="option-effects">
+                            <span class="effect-tag positive">⚡-20</span>
+                            <span class="effect-tag positive">❤️-10</span>
+                            <span class="effect-tag positive">📈+40</span>
+                            <span class="effect-tag positive">👴+15</span>
+                        </div>
+                    </div>
+                    
+                    <div class="event-option">
+                        <div class="option-text">📋 先给王主任打电话请示</div>
+                        <div class="option-effects">
+                            <span class="effect-tag positive">⚡-10</span>
+                            <span class="effect-tag positive">📈+20</span>
+                            <span class="effect-tag negative">👴-10</span>
+                        </div>
+                    </div>
+                    
+                    <div class="event-option selected">
+                        <div class="option-text">⏰ 等天亮了解清楚再报</div>
+                        <div class="option-effects">
+                            <span class="effect-tag negative">⚡-5</span>
+                            <span class="effect-tag negative">📈-30</span>
+                            <span class="effect-tag negative">👴-25</span>
+                            <span class="effect-tag negative">⚠️高风险</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mockup-label">🎭 事件选项界面</div>
+                <div class="mockup-desc">
+                    每个选项显示效果预览，悬停可查看详细影响。风险与回报并存。
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align:center;margin-top:30px;">
+            <button class="prototype-btn" onclick="alert('这只是可视化原型，正式开发后将支持完整交互！')">
+                🎮 体验完整原型
+            </button>
+        </div>
+        
+        <div style="text-align:center;margin-top:20px;color:#8b8b8b;font-size:7px;">
+            <p>📝 这是像素风 UI 的可视化预览</p>
+            <p style="margin-top:8px;">基于GBA/DS风格，16x16像素头像，8-bit配色</p>
+        </div>
+    </div>
+</body>
+</html>
