@@ -1,8 +1,8 @@
-# 🏛️ 体制内模拟器 2.0
+# 🏛️ 体制内模拟器
 
 > 像素风策略养成游戏 - 在体制内摸爬滚打的人生模拟
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Platform](https://img.shields.io/badge/platform-GitHub%20Pages-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 
@@ -10,16 +10,17 @@
 
 ## 🎮 游戏介绍
 
-一款深度的**像素风策略养成游戏**，模拟真实的体制内工作生活。
+一款深度的**像素风策略养成游戏**，模拟真实的体制内工作生活。采用模块化架构，纯前端技术栈（HTML5+CSS3+Vanilla JS+Canvas），无外部依赖。
 
 ### 核心特色
 
 - 🎨 **像素风格** - GBA/DS 经典像素艺术
-- 🎯 **深度策略** - 技能树、内心声音、多重选择
+- 🎯 **深度策略** - 技能系统、任务系统、多重选择
 - 🤝 **社交模拟** - 复杂的人际关系网络
-- 📖 **剧情系统** - 7条剧情线，50+成就
-- 🔄 **多周目** - New Game+ 机制，周目加成
+- 📖 **剧情系统** - 多结局、成就系统
+- 🔄 **多周目** - New Game+ 机制
 - 📱 **移动端优化** - 竖屏设计，单手操作
+- 🎵 **音效系统** - 沉浸式体验
 
 ---
 
@@ -32,21 +33,24 @@
 - 🎭 政治智慧
 - ✨ 个人魅力
 
-### 2. 内心声音
-- 🎯 野心家 - 往上爬！
-- 😇 老好人 - 真诚待人
-- 🛡️ 谨慎派 - 稳扎稳打
+### 2. 任务系统
+- 公文处理
+- 会议服务
+- 紧急事件
+- 服务群众
+- 人际关系
+- 职场政治
+- 值班值守
 
-### 3. 事件系统
-- 30+ 精选事件
-- 多重选择分支
-- 难度等级系统
-- 冷却机制
-
-### 4. 社交系统
-- 5个角色关系网络
+### 3. 角色系统
+- 5个主要角色关系网络
 - 信任/好感/竞争
 - 派系系统
+
+### 4. 成就与结局
+- 50+ 成就等你解锁
+- 多结局系统
+- New Game+ 周目加成
 
 ---
 
@@ -104,9 +108,9 @@
 ## 🛠️ 技术栈
 
 - **前端**：HTML5 + CSS3 + JavaScript (ES6+)
-- **样式**：纯 CSS（响应式设计）
+- **架构**：模块化设计，事件总线解耦
 - **存储**：LocalStorage
-- **部署**：GitHub Pages
+- **部署**：GitHub Pages + Vercel
 
 ### 无依赖
 - ❌ 无需 npm/node_modules
@@ -120,72 +124,58 @@
 
 ```
 tizhi-simulator/
-├── index.html              # 主入口
-├── css/
-│   ├── pixel-theme.css     # 像素风主题
-│   └── mobile-layout.css   # 移动端布局
-├── js/
-│   ├── core/              # 核心系统
-│   │   ├── GameEngine.js
-│   │   ├── SkillSystem.js
-│   │   ├── InnerVoiceSystem.js
-│   │   ├── EventSystem.js
-│   │   ├── AchievementSystem.js
-│   │   └── StoryChainSystem.js
-│   ├── data/              # 数据文件
-│   │   ├── events.js
-│   │   ├── characters.js
-│   │   └── skills.js
-│   ├── ui/                # UI组件
-│   │   └── UIManager.js
-│   └── utils/             # 工具
-│       └── SaveManager.js
-└── docs/                  # 文档
-    └── specs/
+├── index.html                    # 主入口
+├── assets/                       # 资源文件
+│   ├── css/                      # 样式
+│   │   ├── main.css
+│   │   ├── pixel-fonts.css
+│   │   └── modules/pixel-components.css
+│   ├── js/                       # JavaScript 模块
+│   │   ├── core/                 # 核心系统
+│   │   │   ├── eventBus.js       # 事件总线
+│   │   │   ├── gameState.js      # 游戏状态
+│   │   │   ├── saveSystem.js     # 存档系统
+│   │   │   └── timeSystem.js     # 时间系统
+│   │   ├── systems/              # 游戏系统
+│   │   │   ├── achievementSystem.js
+│   │   │   ├── audioSystem.js
+│   │   │   ├── canvasSystem.js
+│   │   │   ├── cardSystem.js
+│   │   │   ├── characterSystem.js
+│   │   │   ├── economySystem.js
+│   │   │   ├── endingSystem.js
+│   │   │   ├── eventSystem.js
+│   │   │   ├── miniGameSystem.js
+│   │   │   ├── narratorSystem.js
+│   │   │   ├── needsSystem.js
+│   │   │   ├── newGamePlusSystem.js
+│   │   │   ├── pixelSceneRenderer.js
+│   │   │   ├── sceneCardRenderer.js
+│   │   │   ├── skillSystem.js
+│   │   │   └── taskSystem.js
+│   │   └── ui/                   # UI 组件
+│   │       ├── dialogueUI.js
+│   │       ├── mainUI.js
+│   │       └── skillTreeUI.js
+│   ├── images/                   # 图片资源
+│   │   ├── bg/                   # 背景
+│   │   ├── characters/           # 角色
+│   │   └── ui/                   # UI 元素
+│   └── sounds/                   # 音效
+├── css/                          # 全局样式
+│   ├── pixel-theme.css           # 像素风主题
+│   └── mobile-layout.css         # 移动端布局
+├── js/                           # 旧版 JS（兼容）
+│   ├── core/                     # 核心模块
+│   ├── data/                     # 数据文件
+│   ├── ui/                       # UI 模块
+│   └── utils/                    # 工具函数
+├── docs/                         # 文档
+│   └── superpowers/specs/        # 系统设计文档
+├── 2026-05-28-tizhi-simulator-redesign.md  # 重构文档
+├── 开发计划.md                   # 开发计划
+└── README.md                     # 本文件
 ```
-
----
-
-## 🌟 游戏系统
-
-### 🎯 技能树
-每种技能有 4 个等级：
-- ★★ 基础技能：解锁相关选项
-- ☆☆☆ 中级技能：选项效果 +20%
-- ✦✦✦✦ 高级技能：解锁特殊剧情
-
-### 🧠 内心声音
-三大声音动态影响你的决策：
-- 野心家（红色）
-- 老好人（蓝色）
-- 谨慎派（绿色）
-
-### 📋 事件系统
-- 公文处理
-- 会议服务
-- 紧急事件
-- 服务群众
-- 人际关系
-- 职场政治
-- 值班值守
-
-### 🏆 成就系统
-50+ 成就等你解锁：
-- 技能类
-- 关系类
-- 进度类
-- 特殊类
-- 隐藏类
-
-### 📖 剧情链
-7条剧情线：
-- 试用期转正
-- 第一次晋升
-- 派系之争
-- 原则考验
-- 贵人相助
-- 职场危机
-- 不忘初心（真实结局）
 
 ---
 
@@ -212,28 +202,24 @@ tizhi-simulator/
 
 ## 🔧 开发指南
 
-### 添加新事件
-编辑 `js/data/events.js`，添加新的事件对象：
+### 模块化架构
+项目采用事件总线（Event Bus）解耦各系统，所有模块通过事件通信：
 
 ```javascript
-new_event: {
-  id: 'new_event',
-  category: '类别',
-  title: '事件标题',
-  description: '事件描述',
-  difficulty: 'normal',
-  timeCost: 2,
-  options: [
-    {
-      text: '选项文本',
-      type: 'balanced',
-      effects: { energy: -10, reputation: 5, exp: 20 },
-      characterEffects: { director: 10 },
-      voiceBonus: { ambition: 5, goodperson: 5, cautious: 5 }
-    }
-  ]
-}
+// 发布事件
+eventBus.publish('task.completed', { taskId: 'doc_001', exp: 50 });
+
+// 订阅事件
+eventBus.subscribe('task.completed', (data) => {
+  console.log('任务完成:', data);
+});
 ```
+
+### 添加新系统
+1. 在 `assets/js/systems/` 创建新系统文件
+2. 实现系统逻辑
+3. 通过事件总线与其他系统通信
+4. 在 `assets/js/game.js` 中初始化
 
 ### 自定义样式
 编辑 `css/pixel-theme.css` 修改像素风配色：
@@ -256,6 +242,12 @@ new_event: {
 - ✅ 触摸友好
 - ✅ 单手操作
 - ✅ 安全区域适配
+- ✅ 圆形悬浮按钮（摸鱼按钮）
+
+### 移动端布局
+- 卡片流布局
+- 消息按时间倒序排列（最新在最上）
+- 始终悬浮的圆形操作按钮
 
 ### 测试移动端
 1. 打开浏览器开发者工具（F12）
@@ -265,18 +257,19 @@ new_event: {
 
 ---
 
-## 🌐 部署到 GitHub Pages
+## 🌐 部署
 
-### 自动部署
-推送到 `main` 分支后，GitHub Actions 会自动部署！
+### GitHub Pages
+推送到 `main` 分支后，GitHub Pages 会自动部署：
+1. 进入仓库 Settings → Pages
+2. Source 选择 `main` 分支
+3. 点击 Save
 
-### 手动部署
-1. 进入仓库 Settings
-2. 找到 Pages
-3. Source 选择 `main` 分支
-4. 点击 Save
-
-等待 1-2 分钟即可访问！
+### Vercel
+1. 登录 Vercel
+2. 导入 GitHub 仓库
+3. 自动检测为静态网站
+4. 一键部署
 
 ---
 
@@ -311,6 +304,7 @@ new_event: {
 
 - GitHub: [@HuXufeng](https://github.com/HuXufeng)
 - 项目地址: https://github.com/HuXufeng/tizhi-simulator
+- 在线游玩: https://huxufeng.github.io/tizhi-simulator/
 
 ---
 
