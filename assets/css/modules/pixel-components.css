@@ -1,0 +1,48 @@
+/* 像素化UI组件 */
+.pixel-border {
+    border: 2px solid var(--border-color);
+    border-image: repeating-linear-gradient(
+        45deg,
+        var(--border-color),
+        var(--border-color) 2px,
+        transparent 2px,
+        transparent 4px
+    ) 2;
+    image-rendering: pixelated;
+}
+
+.pixel-button {
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    padding: 8px 16px;
+    font-family: 'PixelFont', monospace;
+    font-size: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    position: relative;
+    image-rendering: pixelated;
+}
+
+.pixel-button:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--gold);
+}
+
+.pixel-button:active {
+    transform: translateY(1px);
+}
+
+/* 像素化进度条 */
+.pixel-progress {
+    height: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    image-rendering: pixelated;
+}
+
+.pixel-progress-bar {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.3s;
+}

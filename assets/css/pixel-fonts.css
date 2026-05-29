@@ -1,0 +1,13 @@
+/* 像素字体 */
+@font-face {
+    font-family: 'PixelFont';
+    src: local('Courier New');
+    font-display: swap;
+}
+
+.pixel-text {
+    font-family: 'PixelFont', 'Courier New', monospace;
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+}
